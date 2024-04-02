@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello EventController!{% endblock %}
+
+{% block body %}
+    {% for event in event %}
+        <tr>
+            <td>{{ event.id }}</td>
+            <td>{{ event.name }}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}
