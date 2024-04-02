@@ -49,7 +49,7 @@ class Event
     #[Assert\NotBlank]
     private ?string $state = null;
 
-    #[ORM\ManyToOne(inversedBy: 'events')]
+    #[ORM\ManyToOne(cascade: ['persist','remove'], inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Location $location = null;
 

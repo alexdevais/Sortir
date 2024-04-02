@@ -28,11 +28,7 @@ class EventType extends AbstractType
             ->add('nbInscriptionMax')
             ->add('description')
             ->add('state')
-            ->add('location', EntityType::class, [
-                'class' => Location::class,
-                'choice_label' => 'name', // Nom du champ à afficher dans la liste déroulante
-                'placeholder' => 'Select a location', // Texte par défaut de la liste déroulante
-                'required' => true, // Rendre le champ obligatoire ou non
+            ->add('location', LocationType::class, [
             ])
             ->add('submit', SubmitType::class)
         ;

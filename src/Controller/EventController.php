@@ -27,7 +27,7 @@ class EventController extends AbstractController
     }
 
 
-    #[Route('/create', name: 'create_location')]
+/*    #[Route('/create', name: 'create_location')]
     public function createLocation(Request $request, EntityManagerInterface $em): Response
     {
         $locationForm = $this->createForm(LocationType::class);
@@ -61,6 +61,25 @@ class EventController extends AbstractController
 
         return $this->render('event/eventForm.html.twig', [
             'eventForm' => $eventForm,
+        ]);
+    }*/
+
+    #[Route('/create', name: 'create_event')]
+    public function createEvent(Request $request, EntityManagerInterface $em): Response
+    {
+
+        $eventForm = $this->createForm(EventType::class);
+        $eventForm->handleRequest($request);
+
+        if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
+            $em->persist($eventForm->getData());
+            $em->flush();
+
+            return $this->redirectToRoute('list_event');
+        }
+
+        return $this->render('event/event.html.twig', [
+            'form' => $eventForm,
         ]);
     }
 }
