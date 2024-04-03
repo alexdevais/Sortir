@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,9 +61,19 @@ class UserController extends AbstractController
         return $this->render('user/update.html.twig', [
             'updateForm' => $form->createView(),
         ]);
+
     }
 
+    #[Route('/users', name: 'app_user_list')]
+    public function list(UserRepository $repository,): Response
+    {
+        $users = $repository->findAll();
 
+
+        return $this->render('user/list.html.twig', [
+            'users' => $users,
+        ]);
+    }
 }
 
 
