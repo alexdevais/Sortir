@@ -9,15 +9,13 @@
         <dd>{{ event.name }}</dd>
         <dt>Description:</dt>
         <dd>{{ event.description }}</dd>
-
-{#        TODO rajouter le nom de l'organistrateur#}
-{#        <dt>Author:</dt>#}
-{#        <dd>{{ event.author }}</dd>#}
-
+        <dt>Organizer:</dt>
+        <dd>{{ event.organizer.name }}</dd>
         <dt>Date limitation inscription:</dt>
         <dd>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</dd>
         <dt>Number inscription max:</dt>
-        <dd>{{ event.nbInscriptionMax}}</dd>
+        <dd>Available places: {{ event.nbInscriptionMax - event.participants.count }}</dd>
+
         <dt>State:</dt>
         <dd>{{ event.state }}</dd>
         <dt>Name location:</dt>
@@ -29,17 +27,26 @@
         <dt>Street:</dt>
         <dd>{{ event.location.street }}</dd>
 
+        {% if not is_granted('ROLE_USER') %}
+            <p>You must be logged in to participate in this event.</p>
+            <a href="{{ path('app_login') }}">Login</a>
+        {% else %}
 
-{#        {% if event.participants is defined %}#}
-{#            <ul>#}
-{#                {% for participant in event.participants %}#}
-{#                    <li>{{ participant.name }}</li>#}
-{#                {% endfor %}#}
-{#            </ul>#}
-{#        {% else %}#}
-{#            <p>Participants not loaded yet.</p>#}
-{#        {% endif %}#}
-
+            {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
+                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
+            {% else %}
+            {% if event.state == 'OPEN' %}
+                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
+            {% endif%}
+                {% if event.state != 'OPEN' %}
+                    <p>Event is not open for registration.</p>
+                {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}
+                    <p>Registration limit reached for this event.</p>
+                {% else %}
+                    <p>You are already registered for this event.</p>
+                {% endif %}
+            {% endif %}
+        {% endif %}
 
     </dl>
 {% endblock %}

@@ -30,10 +30,17 @@ class EventController extends AbstractController
     public function createEvent(Request $request, EntityManagerInterface $em): Response
     {
         $event = new Event();
+
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
 
         if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
+            $user = $this->getUser();
+
+            if (!$user) {
+                return $this->redirectToRoute('app_login');
+            }
+            $event->setOrganizer($user);
 
             $em->persist($eventForm->getData());
             $em->flush();
@@ -58,33 +65,60 @@ class EventController extends AbstractController
     }
 
 
-//    #[Route('/inscription/{id}', name: 'inscription_event')]
-//    public function inscriptionEvent(int $id, Request $request, EntityManagerInterface $em): Response
-//    {
-//        $user = $this->getUser();
-//
-//        if (!$user) {
-//            return $this->redirectToRoute('login');
-//        }
-//
-//        $event = $em->getRepository(Event::class)->find($id);
-//
-//        if (!$event) {
-//            throw $this->createNotFoundException('Event not found!');
-//        }
-//
-//        $isAlreadyRegistered = $event->getUser()->contains($user);
-//
-//        if (!$isAlreadyRegistered) {
-//            $event->addParticipant($user);
-//            $em->flush();
-//
-//            $this->addFlash('success', 'Event registration successful !');
-//        } else {
-//            $this->addFlash('warning', 'You are already registered for this event.');
-//        }
-//
-//        return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
-//    }
+    #[Route('/inscription/{id}', name: 'inscription_event')]
+    public function inscriptionEvent(int $id, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('login');
+        }
+
+        $event = $em->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found!');
+        }
+
+        // ne peux pas s'inscrire si l'event n'a pas le status OPEN
+        if ($event->getState() !== 'OPEN') {
+            $this->addFlash('warning', 'Event is not open for registration.');
+            return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+        }
+
+        // ne peux pas s'inscrire si l'vent est deja plein
+        if ($event->getParticipants()->count() >= $event->getNbInscriptionMax()) {
+            $this->addFlash('warning', 'Registration limit reached for this event.');
+            return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+        }
+
+        $isAlreadyRegistered = $event->getUser()->contains($user);
+
+        // register event
+        if ($isAlreadyRegistered) {
+            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()){
+                $event->removeParticipant($user);
+                $em->flush();
+
+                $this->addFlash('success', 'You have successfully unregistered from the event.');
+            } else {
+                $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
+            }
+
+        // unregister event
+        } else {
+            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()){
+                $event->addParticipant($user);
+                $em->flush();
+
+                $this->addFlash('success', 'You have successfully unregistered from the event.');
+            } else {
+                $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
+            }
+        }
+        return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+    }
+
+
 
 }

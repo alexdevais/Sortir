@@ -21,7 +21,7 @@
                                 <td><a href="{{ path('detail_event', {'id': row.id}) }}">{{ row.name }}</a></td>
                                 <td>{{ row.duration | date("m/d/Y") }}</td>
                                 <td>{{ row.dateLimitationInscription | date("m/d/Y") }}</td>
-                                <td>{{ row.nbInscriptionMax }}</td>
+                                <td>{{ row.nbInscriptionMax - row.participants.count }} / {{ row.nbInscriptionMax }}</td>
                                 <td>{{ row.state }}</td>
                                 <td>{{ row.location.name }}</td>
                         </tr>
