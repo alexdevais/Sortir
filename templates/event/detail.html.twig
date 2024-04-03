@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello EventController!{% endblock %}
+
+{% block body %}
+    <h1>Event Detail</h1>
+    <dl>
+        <dt>Name:</dt>
+        <dd>{{ event.name }}</dd>
+        <dt>Description:</dt>
+        <dd>{{ event.description }}</dd>
+
+{#        TODO rajouter le nom de l'organistrateur#}
+{#        <dt>Author:</dt>#}
+{#        <dd>{{ event.author }}</dd>#}
+
+        <dt>Date limitation inscription:</dt>
+        <dd>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</dd>
+        <dt>Number inscription max:</dt>
+        <dd>{{ event.nbInscriptionMax}}</dd>
+        <dt>State:</dt>
+        <dd>{{ event.state }}</dd>
+        <dt>Name location:</dt>
+        <dd>{{ event.location.name }}</dd>
+        <dt>City:</dt>
+        <dd>{{ event.location.city }}</dd>
+        <dt>Postcode:</dt>
+        <dd>{{ event.location.postcode }}</dd>
+        <dt>Street:</dt>
+        <dd>{{ event.location.street }}</dd>
+        <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Inscription</a>
+    </dl>
+    <div class="container">
+        <h1>Event Detail</h1>
+        <dl class="row">
+            {% if not event.getParticipants().contains(user) and event.state == 'Ouvert' %}
+                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Register</a>
+            {% else %}
+                {% if event.getParticipants().contains(user) %}
+                    <p>You are already registered for this event.</p>
+                {% else %}
+                    <p>Inscription close.</p>
+                {% endif %}
+            {% endif %}
+        </dl>
+    </div>
+
+{% endblock %}

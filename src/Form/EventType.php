@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\Location;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,9 +28,18 @@ class EventType extends AbstractType
             ])
             ->add('nbInscriptionMax')
             ->add('description')
-            ->add('state')
-            ->add('location', LocationType::class, [
+            ->add('state',ChoiceType::class,[
+                'placeholder' => '-- Choose an option --',
+                'choices'=>[
+                    'Created' => 'CREATED',
+                    'Open'=> 'OPEN',
+                    'Current activity' => 'CURRENT',
+                    'Past' => 'PAST',
+                    'Cancel' => 'CANCEL',
+                ]
             ])
+
+            ->add('location', LocationType::class, [])
             ->add('submit', SubmitType::class)
         ;
     }

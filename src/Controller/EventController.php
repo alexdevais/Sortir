@@ -37,6 +37,7 @@ class EventController extends AbstractController
             $em->persist($eventForm->getData());
             $em->flush();
 
+            $this->addFlash('success', 'Event created !');
             return $this->redirectToRoute('list_event');
         }
 
@@ -44,4 +45,44 @@ class EventController extends AbstractController
             'form' => $eventForm,
         ]);
     }
+
+    #[Route('/detail/{id}', name: 'detail_event')]
+    public function detailEvent(int $id,EventRepository $eventRepository): Response
+    {
+        $event = $eventRepository->find($id);
+        return $this->render('event/detail.html.twig',[
+            'event' => $event,
+        ]);
+
+    }
+
+    #[Route('/inscription/{id}', name: 'inscription_event')]
+    public function inscriptionEvent(int $id, Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('login');
+        }
+
+        $event = $em->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found!');
+        }
+
+        $isAlreadyRegistered = $event->getParticipants()->contains($user);
+
+        if (!$isAlreadyRegistered) {
+            $event->addParticipant($user);
+            $em->flush();
+
+            $this->addFlash('success', 'Event registration successful !');
+        } else {
+            $this->addFlash('warning', 'You are already registered for this event.');
+        }
+
+        return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
+    }
+
 }
