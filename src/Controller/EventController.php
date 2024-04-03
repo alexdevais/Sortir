@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 #[Route('/event')]
 class EventController extends AbstractController
 {
@@ -54,10 +56,29 @@ class EventController extends AbstractController
         ]);
     }
 
+    //TODO l'orga peut annuler l'event
     #[Route('/detail/{id}', name: 'detail_event')]
-    public function detailEvent(int $id,EventRepository $eventRepository): Response
+    public function detailEvent(int $id,EntityManagerInterface $em,EventRepository $eventRepository): Response
     {
         $event = $eventRepository->find($id);
+//        // Vérifier si l'utilisateur est l'organisateur de l'événement
+//        if (!$this->isGranted('ROLE_USER') || $event->getOrganizer() !== $this->getUser()) {
+//
+//        }
+//
+//        // Vérifier si la date de début de l'événement est passée
+//        if ($event->getFirstAirDate() < new \DateTime()) {
+//            $this->addFlash('error', 'L\'événement a déjà commencé et ne peut pas être annulé.');
+//            return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
+//        }
+//
+//        // Annuler l'événement
+//        $event->setState('CANCELLED');
+//        $event = $em->flush();
+//
+//        // Envoyer un message de confirmation à l'organisateur
+//        $this->addFlash('success', 'L\'événement a été annulé avec succès.');
+
         return $this->render('event/detail.html.twig',[
             'event' => $event,
         ]);
@@ -118,7 +139,6 @@ class EventController extends AbstractController
         }
         return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
     }
-
 
 
 }

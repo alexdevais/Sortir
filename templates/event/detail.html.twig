@@ -27,6 +27,13 @@
         <dt>Street:</dt>
         <dd>{{ event.location.street }}</dd>
 
+
+        {% if is_granted('ROLE_USER') %}
+            {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
+                <a href="{{ path('cancel_event', {'id': event.id}) }}" class="btn btn-danger">Cancel Event</a>
+            {% endif %}
+        {% endif %}
+
         {% if not is_granted('ROLE_USER') %}
             <p>You must be logged in to participate in this event.</p>
             <a href="{{ path('app_login') }}">Login</a>
