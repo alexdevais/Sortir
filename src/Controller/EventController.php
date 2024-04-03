@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\Location;
 use App\Form\EventType;
 use App\Form\LocationType;
+use App\Helpers\CallApiService;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,27 +29,39 @@ class EventController extends AbstractController
 
     }
 
+
     #[Route('/create', name: 'create_event')]
-    public function createEvent(Request $request, EntityManagerInterface $em): Response
+    public function createEvent(Request $request, EntityManagerInterface $em, CallApiService $callApiService): Response
     {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
         $event = new Event();
 
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
 
         if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
-            $user = $this->getUser();
 
-            if (!$user) {
-                return $this->redirectToRoute('app_login');
+            /** @var Event $newEvent */
+            $newEvent = $eventForm->getData();
+            $newLocation = $newEvent->getLocation();
+            $responseApi = $callApiService->getFranceDataLoc($newLocation);
+            if(array_key_exists('features', $responseApi) && count($responseApi['features']) > 0){
+                $newLocation->setLongitude($responseApi['features'][0]['geometry']['coordinates'][0])
+                            ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
+                $user = $this->getUser();
+                $event->setOrganizer($user);
+
+                $em->persist($newEvent);
+                $em->flush();
+
+                $this->addFlash('success', 'Event created !');
+                return $this->redirectToRoute('list_event');
             }
-            $event->setOrganizer($user);
-
-            $em->persist($eventForm->getData());
-            $em->flush();
-
-            $this->addFlash('success', 'Event created !');
-            return $this->redirectToRoute('list_event');
+        $eventForm->addError('non-existent address');
         }
 
         return $this->render('event/event.html.twig', [

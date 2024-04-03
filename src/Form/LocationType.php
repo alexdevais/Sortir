@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Location;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,8 +18,8 @@ class LocationType extends AbstractType
             ->add('city')
             ->add('postcode')
             ->add('street')
-            ->add('latitude')
-            ->add('longitude')
+            ->add('latitude', HiddenType::class)
+            ->add('longitude',HiddenType::class)
         ;
     }
 

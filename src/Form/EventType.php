@@ -38,7 +38,6 @@ class EventType extends AbstractType
                     'Cancel' => 'CANCEL',
                 ]
             ])
-
             ->add('location', LocationType::class, [])
             ->add('submit', SubmitType::class)
         ;
