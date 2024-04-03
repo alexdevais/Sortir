@@ -28,21 +28,18 @@
         <dd>{{ event.location.postcode }}</dd>
         <dt>Street:</dt>
         <dd>{{ event.location.street }}</dd>
-        <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Inscription</a>
-    </dl>
-    <div class="container">
-        <h1>Event Detail</h1>
-        <dl class="row">
-            {% if not event.getParticipants().contains(user) and event.state == 'Ouvert' %}
-                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Register</a>
-            {% else %}
-                {% if event.getParticipants().contains(user) %}
-                    <p>You are already registered for this event.</p>
-                {% else %}
-                    <p>Inscription close.</p>
-                {% endif %}
-            {% endif %}
-        </dl>
-    </div>
 
+
+{#        {% if event.participants is defined %}#}
+{#            <ul>#}
+{#                {% for participant in event.participants %}#}
+{#                    <li>{{ participant.name }}</li>#}
+{#                {% endfor %}#}
+{#            </ul>#}
+{#        {% else %}#}
+{#            <p>Participants not loaded yet.</p>#}
+{#        {% endif %}#}
+
+
+    </dl>
 {% endblock %}

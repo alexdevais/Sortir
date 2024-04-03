@@ -4,4 +4,11 @@
 
 {% block body %}
     {{ form(form) }}
+
+    {% if event.organizer is defined %}
+        Event organizer: {{ event.organizer.name }}
+    {% else %}
+        Event organizer not yet loaded.
+    {% endif %}
+
 {% endblock %}

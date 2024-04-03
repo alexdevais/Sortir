@@ -58,6 +58,17 @@ class Event
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
     private Collection $user;
 
+    #[ORM\ManyToOne(inversedBy: 'organizerEvents')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $organizer = null;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="organizedEvents")
+     * @ORM\JoinColumn(nullable=true)
+     */
+
+
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -184,6 +195,45 @@ class Event
     public function removeUser(User $user): static
     {
         $this->user->removeElement($user);
+
+        return $this;
+    }
+
+ 
+
+    public function addParticipant(User $participant): self
+    {
+        if (!$this->user->contains($participant)) {
+            $this->user->add($participant);
+            $participant->addEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(User $participant): self
+    {
+        if ($this->user->contains($participant)) {
+            $this->user->removeElement($participant);
+            $participant->removeEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function getParticipants(): Collection
+    {
+        return $this->user;
+    }
+
+    public function getOrganizer(): ?User
+    {
+        return $this->organizer;
+    }
+
+    public function setOrganizer(?User $organizer): static
+    {
+        $this->organizer = $organizer;
 
         return $this;
     }

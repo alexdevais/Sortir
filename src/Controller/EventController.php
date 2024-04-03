@@ -29,11 +29,12 @@ class EventController extends AbstractController
     #[Route('/create', name: 'create_event')]
     public function createEvent(Request $request, EntityManagerInterface $em): Response
     {
-
-        $eventForm = $this->createForm(EventType::class);
+        $event = new Event();
+        $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
 
         if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
+
             $em->persist($eventForm->getData());
             $em->flush();
 
@@ -56,33 +57,34 @@ class EventController extends AbstractController
 
     }
 
-    #[Route('/inscription/{id}', name: 'inscription_event')]
-    public function inscriptionEvent(int $id, Request $request, EntityManagerInterface $em): Response
-    {
-        $user = $this->getUser();
 
-        if (!$user) {
-            return $this->redirectToRoute('login');
-        }
-
-        $event = $em->getRepository(Event::class)->find($id);
-
-        if (!$event) {
-            throw $this->createNotFoundException('Event not found!');
-        }
-
-        $isAlreadyRegistered = $event->getParticipants()->contains($user);
-
-        if (!$isAlreadyRegistered) {
-            $event->addParticipant($user);
-            $em->flush();
-
-            $this->addFlash('success', 'Event registration successful !');
-        } else {
-            $this->addFlash('warning', 'You are already registered for this event.');
-        }
-
-        return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
-    }
+//    #[Route('/inscription/{id}', name: 'inscription_event')]
+//    public function inscriptionEvent(int $id, Request $request, EntityManagerInterface $em): Response
+//    {
+//        $user = $this->getUser();
+//
+//        if (!$user) {
+//            return $this->redirectToRoute('login');
+//        }
+//
+//        $event = $em->getRepository(Event::class)->find($id);
+//
+//        if (!$event) {
+//            throw $this->createNotFoundException('Event not found!');
+//        }
+//
+//        $isAlreadyRegistered = $event->getUser()->contains($user);
+//
+//        if (!$isAlreadyRegistered) {
+//            $event->addParticipant($user);
+//            $em->flush();
+//
+//            $this->addFlash('success', 'Event registration successful !');
+//        } else {
+//            $this->addFlash('warning', 'You are already registered for this event.');
+//        }
+//
+//        return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
+//    }
 
 }

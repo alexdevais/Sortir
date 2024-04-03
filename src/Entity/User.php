@@ -47,9 +47,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'user')]
     private Collection $events;
 
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'organizer')]
+    private Collection $organizerEvents;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->organizerEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -185,6 +189,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->events->removeElement($event)) {
             $event->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getOrganizerEvents(): Collection
+    {
+        return $this->organizerEvents;
+    }
+
+    public function addOrganizerEvent(Event $organizerEvent): static
+    {
+        if (!$this->organizerEvents->contains($organizerEvent)) {
+            $this->organizerEvents->add($organizerEvent);
+            $organizerEvent->setOrganizer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganizerEvent(Event $organizerEvent): static
+    {
+        if ($this->organizerEvents->removeElement($organizerEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($organizerEvent->getOrganizer() === $this) {
+                $organizerEvent->setOrganizer(null);
+            }
         }
 
         return $this;
