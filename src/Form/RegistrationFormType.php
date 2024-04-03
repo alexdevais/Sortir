@@ -53,26 +53,18 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('brochure', FileType::class, [
-                'label' => 'Brochure (PDF file)',
-
-                // unmapped means that this field is not associated to any entity property
-                'mapped' => false,
-
-                // make it optional so you don't have to re-upload the PDF file
-                // every time you edit the Product details
+            ->add('photo', FileType::class, [
+                'label' => 'Photo',
                 'required' => false,
 
-                // unmapped fields can't define their validation using attributes
-                // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
                     new File([
-                        'maxSize' => '1024k',
+                        'maxSize' => '2048k',
                         'mimeTypes' => [
-                            'application/pdf',
-                            'application/x-pdf',
+                            'image/png',
+                            'image/jpeg',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid PDF document',
+                        'mimeTypesMessage' => 'Please upload a valid photo',
                     ])
                 ],
             ])

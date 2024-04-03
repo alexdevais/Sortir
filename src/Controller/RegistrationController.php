@@ -47,12 +47,12 @@ class RegistrationController extends AbstractController
                 }
             }
 
-            $user->setBrochureFilename($newFilename);
+            $user->setPhoto($newFilename);
             $user->setRoles(['ROLE_USER']);
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_detail');
         }
 
         return $this->render('registration/register.html.twig', ['registrationForm' => $form,]);
