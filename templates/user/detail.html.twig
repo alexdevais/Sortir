@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+    <h1>Modification du profil</h1>
+    <ul>
+        <li>{{ user.name }} - {{ user.firstName }}</li>
+        <li>{{ user.email }}</li>
+        {% if user.phoneNumber %}
+            <li>{{ user.phoneNumber }}</li>
+        {% endif %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+    </ul>
+    <a href="{{ path('app_update', {'id': user.id}) }}" class="btn btn-primary">Update</a>
+{% endblock %}
