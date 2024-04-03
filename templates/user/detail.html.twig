@@ -6,10 +6,14 @@
     <h1>Modification du profil</h1>
     <ul>
         <li>{{ user.name }} - {{ user.firstName }}</li>
+        {% if user.photo %}
+            <img src="{{ asset('/uploads/brochures/' ~ user.photo) }}">
+        {% endif %}
         <li>{{ user.email }}</li>
         {% if user.phoneNumber %}
             <li>{{ user.phoneNumber }}</li>
         {% endif %}
+
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">
                 {{ message }}

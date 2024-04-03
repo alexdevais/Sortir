@@ -22,6 +22,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+        $newFilename = null;
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
@@ -37,7 +38,6 @@ class RegistrationController extends AbstractController
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $photo->guessExtension();
 
-
                 try {
                     $photo->move(
                         $this->getParameter('brochures_directory'),
@@ -52,7 +52,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_detail');
+            return $this->redirectToRoute('app_detail', ['id' => $user->getId()]);
         }
 
         return $this->render('registration/register.html.twig', ['registrationForm' => $form,]);
