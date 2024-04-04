@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -69,6 +70,12 @@ class RegistrationFormType extends AbstractType
                         'mimeTypesMessage' => 'Please upload a valid photo',
                     ])
                 ],
+            ])
+            ->add('refresh', ButtonType::class, [
+                'label' => 'Clear file',
+                'attr' => [
+                    'onclick' => 'event.preventDefault(); this.closest(\'form\').reset();'
+                ]
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Submit'
