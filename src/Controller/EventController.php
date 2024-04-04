@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
-use App\Entity\Location;
 use App\Form\EventType;
-use App\Form\LocationType;
 use App\Helpers\CallApiService;
 use App\Repository\EventRepository;
 use DateTime;
@@ -14,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/event')]
 class EventController extends AbstractController
@@ -47,6 +44,8 @@ class EventController extends AbstractController
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
 
+        $event->setCreatedDate(new DateTime('now'));
+
         if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
 
             /** @var Event $newEvent */
@@ -58,6 +57,7 @@ class EventController extends AbstractController
                             ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
                 $user = $this->getUser();
                 $event->setOrganizer($user);
+
 
                 $em->persist($newEvent);
                 $em->flush();
@@ -77,13 +77,16 @@ class EventController extends AbstractController
     #[Route('/detail/{id}', name: 'detail_event')]
     public function detailEvent(int $id,EventRepository $eventRepository): Response
     {
-        $event = $eventRepository->find($id);
+        $participantId = $this->getUser();
 
+        $event = $eventRepository->find($id); // Fetch the event
+        $participant = $eventRepository->FindParticipantById($participantId);
         return $this->render('event/detail.html.twig',[
             'event' => $event,
         ]);
 
     }
+
 
     // changer l'etat d'un event pour le cancel + motif d'annulation
     #[Route('/detail/{id}/cancel', name: 'cancel_event')]

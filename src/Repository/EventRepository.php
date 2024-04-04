@@ -32,6 +32,25 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function FindParticipantById(int $participantId): array
+    {
+
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('e')
+            ->from('App\Entity\Event', 'e')
+            ->innerJoin('e.user', 'p')
+            ->where('p.id = :participantId')
+            ->setParameter('participantId', $participantId);
+
+        $query = $qb->getQuery();
+        $events = $query->getResult();
+
+        return $events;
+    }
+
+
     //    /**
     //     * @return Event[] Returns an array of Event objects
     //     */

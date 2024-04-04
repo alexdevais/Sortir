@@ -3,8 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Event;
-use App\Entity\Location;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -20,9 +19,7 @@ class EventType extends AbstractType
             ->add('firstAirDate', null, [
                 'widget' => 'single_text',
             ])
-            ->add('duration', null, [
-                'widget' => 'single_text',
-            ])
+            ->add('duration')
             ->add('dateLimitationInscription', null, [
                 'widget' => 'single_text',
             ])

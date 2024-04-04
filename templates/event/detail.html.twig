@@ -10,14 +10,23 @@
         <dt>Description:</dt>
         <dd>{{ event.description }}</dd>
         <dt>Organizer:</dt>
-        <dd>{{ event.organizer.name }}</dd>
+        <dd><a href="{{ path('app_detail', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a></dd>
+        <dt>Participant:</dt>
+        <ul>
+            {% for participant in event.participants %}
+                <li>{{ participant.name }}</li>
+            {% endfor %}
+        </ul>
+{#        <dd><a href="{{ path('app_detail', {'id': event.user.id}) }}">{{ event.user.name }}</a></dd>#}
         <dt>Date limitation inscription:</dt>
         <dd>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</dd>
         <dt>Number inscription max:</dt>
         <dd>Available places: {{ event.nbInscriptionMax - event.participants.count }}</dd>
-
         <dt>State:</dt>
         <dd>{{ event.state }}</dd>
+
+        <br>
+        <dt>LOCATION:</dt>
         <dt>Name location:</dt>
         <dd>{{ event.location.name }}</dd>
         <dt>City:</dt>
@@ -30,7 +39,10 @@
 
         {% if is_granted('ROLE_USER') %}
             {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
-                <a href="{{ path('cancel_event', {'id': event.id}) }}" class="btn btn-danger">Cancel Event</a>
+                <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
+                    <input type="text" name="motif" placeholder="Motif d'annulation">
+                    <button type="submit" class="btn btn-danger">Annuler l'événement</button>
+                </form>
             {% endif %}
         {% endif %}
 

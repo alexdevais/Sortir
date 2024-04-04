@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Event
 {
     #[ORM\Id]
@@ -28,14 +29,13 @@ class Event
     #[Assert\GreaterThan('today')]
     private ?\DateTimeInterface $firstAirDate = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column]
     #[Assert\NotBlank]
-    #[Assert\GreaterThan(propertyPath:'firstAirDate')]
-    private ?\DateTimeInterface $duration = null;
+    private ?int $duration = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Assert\GreaterThan(propertyPath:'firstAirDate')]
+    #[Assert\LessThan(propertyPath:'firstAirDate')]
     private ?\DateTimeInterface $dateLimitationInscription = null;
 
     #[ORM\Column]
@@ -67,12 +67,6 @@ class Event
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdDate = null;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="organizedEvents")
-     * @ORM\JoinColumn(nullable=true)
-     */
-
 
 
     public function __construct()
@@ -109,12 +103,12 @@ class Event
         return $this;
     }
 
-    public function getDuration(): ?\DateTimeInterface
+    public function getDuration():?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTimeInterface $duration): static
+    public function setDuration(int $duration): static
     {
         $this->duration = $duration;
 
