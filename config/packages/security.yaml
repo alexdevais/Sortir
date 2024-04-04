@@ -1,4 +1,10 @@
 security:
+  role_hierarchy:
+    ROLE_ADMIN: ROLE_USER
+    ROLE_ORGANISATEUR: ROLE_PARTICIPANT
+    ROLE_PARTICIPANT: ROLE_UTILISATEUR
+    ROLE_UTILISATEUR: []
+
   # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
