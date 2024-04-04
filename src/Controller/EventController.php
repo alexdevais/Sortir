@@ -4,9 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Form\EventType;
-use App\Form\FilterFormType;
 use App\Helpers\CallApiService;
-use App\Helpers\Error\FormErrorEvent;
 use App\Repository\EventRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,43 +19,17 @@ class EventController extends AbstractController
 {
 
     #[Route('/', name: 'list_event')]
-    public function listEvent(EventRepository $eventRepository, Request $request): Response
+    public function listEvent(EventRepository $eventRepository): Response
     {
-        $filterForm = $this->createForm(FilterFormType::class);
-        $filterForm->handleRequest($request);
 
         $today = new DateTime(); // Get today's date
         $oneMonthAgo = $today->modify('-1 month');
 
         $event = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
-        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
-            $filters = $filterForm->getData();
 
-            $qb = $this->getDoctrine()->getRepository(Event::class)->createQueryBuilder('e');
-
-            if (isset($filters['location'])) {
-                $qb->andWhere('e.location.city = :site')
-                    ->setParameter('site', $filters['site']);
-            }
-
-            if (isset($filters['name'])) {
-                $qb->andWhere('e.name LIKE :search')
-                    ->setParameter('search', '%' . $filters['search'] . '%');
-            }
-
-            if (isset($filters['startDate']) && isset($filters['endDate'])) {
-                $qb->andWhere('e.date > :startDate')
-                    ->setParameter('startDate', $filters['startDate'])
-                    ->andWhere('e.date < :endDate')
-                    ->setParameter('endDate', $filters['endDate']);
-            }
-
-            $events = $qb->getQuery()->getResult();
-        }
 
         return $this->render('event/index.html.twig', [
             'event' => $event,
-            'filterForm' => $filterForm->createView(),
         ]);
 
     }
