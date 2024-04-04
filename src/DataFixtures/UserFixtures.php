@@ -19,7 +19,7 @@ class UserFixtures extends Fixture
             $user->setName($faker->name);
             $user->setEmail($faker->unique()->safeEmail);
             $user->setFirstName($faker->firstName);
-            $password = password_hash($faker->password, PASSWORD_BCRYPT);
+            $password = password_hash('password', PASSWORD_DEFAULT);
             $user->setPassword($password);
             $roles = ['ROLE_USER'];
             $user->setRoles([$faker->randomElement($roles)]);
