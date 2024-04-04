@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Form\EventType;
 use App\Helpers\CallApiService;
+use App\Helpers\Error\FormErrorEvent;
 use App\Repository\EventRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,8 +53,10 @@ class EventController extends AbstractController
             /** @var Event $newEvent */
             $newEvent = $eventForm->getData();
             $newLocation = $newEvent->getLocation();
-            $responseApi = $callApiService->getFranceDataLoc($newLocation);
-            if(array_key_exists('features', $responseApi) && count($responseApi['features']) > 0){
+
+                $responseApi = $callApiService->getFranceDataLoc($newLocation);
+                if(array_key_exists('features', $responseApi) && count($responseApi['features']) > 0){
+
                 $newLocation->setLongitude($responseApi['features'][0]['geometry']['coordinates'][0])
                             ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
                 $user = $this->getUser();
@@ -64,8 +68,9 @@ class EventController extends AbstractController
 
                 $this->addFlash('success', 'Event created !');
                 return $this->redirectToRoute('list_event');
-            }
-        $eventForm->addError('non-existent address');
+                } else {
+                    $this->addFlash('success', 'Event not created !');
+                }
         }
 
         return $this->render('event/event.html.twig', [
@@ -77,10 +82,11 @@ class EventController extends AbstractController
     #[Route('/detail/{id}', name: 'detail_event')]
     public function detailEvent(int $id,EventRepository $eventRepository): Response
     {
-        $participantId = $this->getUser();
-
-        $event = $eventRepository->find($id); // Fetch the event
+        $user = $this->getUser();
+        $participantId = $user->getId();
+        $event = $eventRepository->find($id);
         $participant = $eventRepository->FindParticipantById($participantId);
+
         return $this->render('event/detail.html.twig',[
             'event' => $event,
         ]);
