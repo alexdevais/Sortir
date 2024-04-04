@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Form\EventType;
+use App\Form\FilterFormType;
 use App\Helpers\CallApiService;
 use App\Helpers\Error\FormErrorEvent;
 use App\Repository\EventRepository;
@@ -20,14 +21,43 @@ class EventController extends AbstractController
 {
 
     #[Route('/', name: 'list_event')]
-    public function listEvent(EventRepository $eventRepository)
+    public function listEvent(EventRepository $eventRepository, Request $request): Response
     {
-        $today = new DateTime(); // Get today's date
-        $oneMonthAgo = $today->modify('-1 month'); // Subtract one month
-        $event = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
+        $filterForm = $this->createForm(FilterFormType::class);
+        $filterForm->handleRequest($request);
 
-        return $this->render('event/index.html.twig',[
+        $today = new DateTime(); // Get today's date
+        $oneMonthAgo = $today->modify('-1 month');
+
+        $event = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
+        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
+            $filters = $filterForm->getData();
+
+            $qb = $this->getDoctrine()->getRepository(Event::class)->createQueryBuilder('e');
+
+            if (isset($filters['location'])) {
+                $qb->andWhere('e.location.city = :site')
+                    ->setParameter('site', $filters['site']);
+            }
+
+            if (isset($filters['name'])) {
+                $qb->andWhere('e.name LIKE :search')
+                    ->setParameter('search', '%' . $filters['search'] . '%');
+            }
+
+            if (isset($filters['startDate']) && isset($filters['endDate'])) {
+                $qb->andWhere('e.date > :startDate')
+                    ->setParameter('startDate', $filters['startDate'])
+                    ->andWhere('e.date < :endDate')
+                    ->setParameter('endDate', $filters['endDate']);
+            }
+
+            $events = $qb->getQuery()->getResult();
+        }
+
+        return $this->render('event/index.html.twig', [
             'event' => $event,
+            'filterForm' => $filterForm->createView(),
         ]);
 
     }
@@ -48,17 +78,17 @@ class EventController extends AbstractController
 
         $event->setCreatedDate(new DateTime('now'));
 
-        if($eventForm->isSubmitted() && $eventForm->isSubmitted()){
+        if ($eventForm->isSubmitted() && $eventForm->isSubmitted()) {
 
             /** @var Event $newEvent */
             $newEvent = $eventForm->getData();
             $newLocation = $newEvent->getLocation();
 
-                $responseApi = $callApiService->getFranceDataLoc($newLocation);
-                if(array_key_exists('features', $responseApi) && count($responseApi['features']) > 0){
+            $responseApi = $callApiService->getFranceDataLoc($newLocation);
+            if (array_key_exists('features', $responseApi) && count($responseApi['features']) > 0) {
 
                 $newLocation->setLongitude($responseApi['features'][0]['geometry']['coordinates'][0])
-                            ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
+                    ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
                 $user = $this->getUser();
                 $event->setOrganizer($user);
 
@@ -68,9 +98,9 @@ class EventController extends AbstractController
 
                 $this->addFlash('success', 'Event created !');
                 return $this->redirectToRoute('list_event');
-                } else {
-                    $this->addFlash('success', 'Event not created !');
-                }
+            } else {
+                $this->addFlash('success', 'Event not created !');
+            }
         }
 
         return $this->render('event/event.html.twig', [
@@ -80,14 +110,14 @@ class EventController extends AbstractController
 
 
     #[Route('/detail/{id}', name: 'detail_event')]
-    public function detailEvent(int $id,EventRepository $eventRepository): Response
+    public function detailEvent(int $id, EventRepository $eventRepository): Response
     {
         $user = $this->getUser();
         $participantId = $user->getId();
         $event = $eventRepository->find($id);
         $participant = $eventRepository->FindParticipantById($participantId);
 
-        return $this->render('event/detail.html.twig',[
+        return $this->render('event/detail.html.twig', [
             'event' => $event,
         ]);
 
@@ -96,11 +126,11 @@ class EventController extends AbstractController
 
     // changer l'etat d'un event pour le cancel + motif d'annulation
     #[Route('/detail/{id}/cancel', name: 'cancel_event')]
-    public function cancelEvent(int $id,EntityManagerInterface $em,EventRepository $eventRepository, Request $request): Response
+    public function cancelEvent(int $id, EntityManagerInterface $em, EventRepository $eventRepository, Request $request): Response
     {
         $event = $eventRepository->find($id);
         $motif = $request->request->get('motif');
-            // Vérifier si l'utilisateur est l'organisateur de l'événement
+        // Vérifier si l'utilisateur est l'organisateur de l'événement
         if (!$this->isGranted('ROLE_USER') || $event->getOrganizer() !== $this->getUser()) {
 
             // Vérifier si la date de début de l'événement est passée
@@ -110,9 +140,9 @@ class EventController extends AbstractController
 
             if (empty($motif)) {
                 $this->addFlash('error', 'Veuillez fournir un motif pour annuler événement.');
-            return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+                return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
             }
-    }
+        }
         $event->setState('CANCELLED');
         $event->setCancelReason($motif);
         $event = $em->flush();
@@ -121,12 +151,12 @@ class EventController extends AbstractController
         // Envoyer un message de confirmation à l'organisateur
         $this->addFlash('success', 'L\'événement a été annulé avec succès.');
 
-        return $this->render('event/detail.html.twig',[
+        return $this->render('event/detail.html.twig', [
             'event' => $event,
         ]);
     }
 
-#[Route('/inscription/{id}', name: 'inscription_event')]
+    #[Route('/inscription/{id}', name: 'inscription_event')]
     public function inscriptionEvent(int $id, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -157,7 +187,7 @@ class EventController extends AbstractController
 
         // register event
         if ($isAlreadyRegistered) {
-            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()){
+            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
                 $event->removeParticipant($user);
                 $em->flush();
 
@@ -166,9 +196,9 @@ class EventController extends AbstractController
                 $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
             }
 
-        // unregister event
+            // unregister event
         } else {
-            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()){
+            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
                 $event->addParticipant($user);
                 $em->flush();
 
