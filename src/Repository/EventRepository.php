@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,16 @@ class EventRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
+    }
+
+    public function findByCreatedDateAfter(DateTime $date): array
+    {
+        $qb = $this->createQueryBuilder('e');
+
+        return $qb->where($qb->expr()->gt('e.createdDate', ':date'))
+            ->setParameter(':date', $date)
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

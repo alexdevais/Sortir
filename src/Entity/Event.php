@@ -62,6 +62,12 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private ?User $organizer = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $cancelReason = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdDate = null;
+
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="organizedEvents")
      * @ORM\JoinColumn(nullable=true)
@@ -237,4 +243,30 @@ class Event
 
         return $this;
     }
+
+    public function getCancelReason(): ?string
+    {
+        return $this->cancelReason;
+    }
+
+    public function setCancelReason(?string $cancelReason): static
+    {
+        $this->cancelReason = $cancelReason;
+
+        return $this;
+    }
+
+    public function getCreatedDate(): ?\DateTimeInterface
+    {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate(\DateTimeInterface $createdDate): static
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    
 }

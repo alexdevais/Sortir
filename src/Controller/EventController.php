@@ -8,6 +8,7 @@ use App\Form\EventType;
 use App\Form\LocationType;
 use App\Helpers\CallApiService;
 use App\Repository\EventRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,10 @@ class EventController extends AbstractController
     #[Route('/', name: 'list_event')]
     public function listEvent(EventRepository $eventRepository)
     {
-        $event = $eventRepository->findAll();
+        $today = new DateTime(); // Get today's date
+        $oneMonthAgo = $today->modify('-1 month'); // Subtract one month
+        $event = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
+
         return $this->render('event/index.html.twig',[
             'event' => $event,
         ]);
@@ -69,28 +73,11 @@ class EventController extends AbstractController
         ]);
     }
 
-    //TODO l'orga peut annuler l'event
+
     #[Route('/detail/{id}', name: 'detail_event')]
-    public function detailEvent(int $id,EntityManagerInterface $em,EventRepository $eventRepository): Response
+    public function detailEvent(int $id,EventRepository $eventRepository): Response
     {
         $event = $eventRepository->find($id);
-//        // Vérifier si l'utilisateur est l'organisateur de l'événement
-//        if (!$this->isGranted('ROLE_USER') || $event->getOrganizer() !== $this->getUser()) {
-//
-//        }
-//
-//        // Vérifier si la date de début de l'événement est passée
-//        if ($event->getFirstAirDate() < new \DateTime()) {
-//            $this->addFlash('error', 'L\'événement a déjà commencé et ne peut pas être annulé.');
-//            return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
-//        }
-//
-//        // Annuler l'événement
-//        $event->setState('CANCELLED');
-//        $event = $em->flush();
-//
-//        // Envoyer un message de confirmation à l'organisateur
-//        $this->addFlash('success', 'L\'événement a été annulé avec succès.');
 
         return $this->render('event/detail.html.twig',[
             'event' => $event,
@@ -98,8 +85,39 @@ class EventController extends AbstractController
 
     }
 
+    // changer l'etat d'un event pour le cancel + motif d'annulation
+    #[Route('/detail/{id}/cancel', name: 'cancel_event')]
+    public function cancelEvent(int $id,EntityManagerInterface $em,EventRepository $eventRepository, Request $request): Response
+    {
+        $event = $eventRepository->find($id);
+        $motif = $request->request->get('motif');
+            // Vérifier si l'utilisateur est l'organisateur de l'événement
+        if (!$this->isGranted('ROLE_USER') || $event->getOrganizer() !== $this->getUser()) {
 
-    #[Route('/inscription/{id}', name: 'inscription_event')]
+            // Vérifier si la date de début de l'événement est passée
+            if ($event->getFirstAirDate() < new \DateTime()) {
+                $this->addFlash('error', 'L\'événement a déjà commencé et ne peut pas être annulé.');
+            }
+
+            if (empty($motif)) {
+                $this->addFlash('error', 'Veuillez fournir un motif pour annuler événement.');
+            return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+            }
+    }
+        $event->setState('CANCELLED');
+        $event->setCancelReason($motif);
+        $event = $em->flush();
+        return $this->redirectToRoute('list_event');
+
+        // Envoyer un message de confirmation à l'organisateur
+        $this->addFlash('success', 'L\'événement a été annulé avec succès.');
+
+        return $this->render('event/detail.html.twig',[
+            'event' => $event,
+        ]);
+    }
+
+#[Route('/inscription/{id}', name: 'inscription_event')]
     public function inscriptionEvent(int $id, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
