@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -40,6 +41,7 @@ class UserController extends AbstractController
 
     // l'utilisateur peut modifier son profil (en récupérant son id)
     #[Route('/user/update/{id}', name: 'app_update')]
+    #[IsGranted('ROLE_ADMIN')]
     public function update(Request $request, EntityManagerInterface $em, int $id, FileUploader $fileUploader): Response
     {
         $user = $em->getRepository(User::class)->find($id);
