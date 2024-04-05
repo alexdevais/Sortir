@@ -17,7 +17,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -30,7 +31,9 @@
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_logout') }}">Logout</a></li>
                     {% if app.user %}
-                        <li class="nav-item active"><a class="nav-link" href="{{ path('app_detail',{'id': app.user.id}) }}">Profile</a></li>
+                        <li class="nav-item active"><a class="nav-link"
+                                                       href="{{ path('app_detail',{'id': app.user.id}) }}">Profile</a>
+                        </li>
                     {% endif %}
                 {% else %}
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
@@ -39,6 +42,13 @@
         </div>
     </div>
 </nav>
+{% if is_granted('ROLE_ADMIN') %}
+    <nav class="navbar">
+        <ul class="navbar-nav nav-item"><h2>Admin</h2>
+            <li><a href="{{ path('app_admin_list') }}">List Users</a></li>
+        </ul>
+    </nav>
+{% endif %}
 
 
 {% for label, messages in app.flashes %}

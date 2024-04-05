@@ -31,26 +31,32 @@ class RegistrationFormType extends AbstractType
                 'required' => false
             ])
             ->add('email', EmailType::class)
-            ->add('plainPassword',  RepeatedType::class, [
+            ->add('plainPassword', RepeatedType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
-                'type' => PasswordType::class,
-                'first_options'  => ['label' => 'Password', 'hash_property_path' => 'password'],
-                'second_options' => ['label' => 'Repeat Password'],
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-
+                'type' => PasswordType::class,
+                'options' => [
+                    'attr' => ['autocomplete' => 'new-password'],
                 ],
+                'first_options' => [
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please enter a password',
+                        ]),
+                        new Length([
+                            'min' => 6,
+                            'minMessage' => 'Your password should be at least {{ limit }} characters',
+                            // max length allowed by Symfony for security reasons
+                            'max' => 4096,
+                        ]),
+                    ],
+                    'label' => 'New Password'
+                ],
+                'second_options' => [
+                    'label' => "Confirm your password"
+                ],
+                'invalid_message' => 'The password fields must match'
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
@@ -86,7 +92,6 @@ class RegistrationFormType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'Submit'
             ]);
-
 
 
     }

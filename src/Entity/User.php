@@ -37,7 +37,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
@@ -53,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $firstName = null;
 
     #[ORM\Column(length: 15, nullable: true)]
-    #[Assert\Range(min: 5, max: 20 )]
+    #[Assert\Range(min: 5, max: 20)]
     private ?string $phoneNumber = null;
 
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'user')]
@@ -97,13 +96,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
+     * @return list<string>
      * @see UserInterface
      *
-     * @return list<string>
      */
     public function getRoles(): array
     {
