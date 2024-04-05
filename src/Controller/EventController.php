@@ -12,6 +12,7 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/event')]
@@ -19,7 +20,7 @@ class EventController extends AbstractController
 {
 
 
-    #[Route('/', name: 'list_event')]
+    #[Route('/{page}', name: 'list_event',requirements: ['page' => '\d+'], defaults: ['page' => 1])]
     public function listEvent(EventRepository $eventRepository): Response
     {
         // event de moins d'un mois
