@@ -8,25 +8,18 @@ use App\Helpers\FileUploader;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/user', name: 'app')]
 class UserController extends AbstractController
 {
 
-    // afficher le détail d'un utilisateur
-    #[Route('/user', name: 'app_user')]
-    public function index(): Response
-    {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
-        ]);
-    }
 
-    //création d'une route de page de détail du user
-    #[Route('/user/detail/{id}', name: 'app_detail')]
+    #[Route('/detail/{id}', name: '_detail')]
     public function detail(EntityManagerInterface $em, int $id): Response
     {
         $user = $em->getRepository(User::class)->find($id);
@@ -40,7 +33,7 @@ class UserController extends AbstractController
     }
 
     // l'utilisateur peut modifier son profil (en récupérant son id)
-    #[Route('/user/update/{id}', name: 'app_update')]
+    #[Route('/update/{id}', name: '_update')]
     #[IsGranted('ROLE_ADMIN')]
     public function update(Request $request, EntityManagerInterface $em, int $id, FileUploader $fileUploader): Response
     {
@@ -53,11 +46,12 @@ class UserController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             $photo = $form->get('photo')->getData();
             if ($photo) {
-                $fileName = $fileUploader->upload($photo,$this->getParameter('brochures_directory'));
+                $fileName = $fileUploader->upload($photo, $this->getParameter('brochures_directory'));
                 $user->setPhoto($fileName);
             }
 
@@ -73,7 +67,7 @@ class UserController extends AbstractController
 
     }
 
-    #[Route('/users', name: 'app_user_list')]
+    #[Route('/list', name: '_user_list')]
     public function list(UserRepository $repository,): Response
     {
         $users = $repository->findAll();
