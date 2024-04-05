@@ -6,9 +6,11 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use http\Message;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -21,6 +23,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
+    #[Assert\Email(message: 'The email is not a valid email',)]
     private ?string $email = null;
 
     /**
@@ -33,21 +37,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, minMessage: 'The name should be longer')]
+    #[Assert\Length(max: 255, maxMessage: 'The name should be shorter')]
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, minMessage: 'The firstname should be longer')]
+    #[Assert\Length(max: 255, maxMessage: 'The firstname should be shorter')]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 15, nullable: true)]
+    #[Assert\Range(min: 5, max: 20 )]
     private ?string $phoneNumber = null;
 
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'user')]
+    #[Assert\NotBlank]
     private Collection $events;
 
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'organizer')]
+    #[Assert\NotBlank]
     private Collection $organizerEvents;
 
     #[ORM\Column(length: 255, nullable: true)]
