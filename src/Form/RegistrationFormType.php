@@ -3,12 +3,14 @@
 namespace App\Form;
 
 use App\Entity\User;
+use Doctrine\DBAL\ParameterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,9 +31,12 @@ class RegistrationFormType extends AbstractType
                 'required' => false
             ])
             ->add('email', EmailType::class)
-            ->add('plainPassword', PasswordType::class, [
+            ->add('plainPassword',  RepeatedType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
+                'type' => PasswordType::class,
+                'first_options'  => ['label' => 'Password', 'hash_property_path' => 'password'],
+                'second_options' => ['label' => 'Repeat Password'],
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
@@ -44,6 +49,7 @@ class RegistrationFormType extends AbstractType
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
+
                 ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
@@ -80,6 +86,7 @@ class RegistrationFormType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'Submit'
             ]);
+
 
 
     }
