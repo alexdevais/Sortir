@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
-use Doctrine\DBAL\ParameterType;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

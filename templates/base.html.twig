@@ -14,19 +14,22 @@
 </head>
 <body>
 <nav class="navbar ">
-            <ul class="navbar-nav nav-item">
-                <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                <li><a href="{{ path('app_login') }}">Login</a></li>
-                <li><a href="{{ path('app_register') }}">Registration</a></li>
-                <li><a href="{{ path('list_event') }}">List event</a></li>
-                <li><a href="{{ path('create_event') }}">Create event</a></li>
-                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <li><a href="{{ path('app_logout') }}">Logout</a></li>
-                    {% if app.user %}
-                        <li><a href="{{ path('app_detail',{'id': app.user.id}) }}">Profile</a></li>
-                    {% endif %}
-                {% endif %}
-            </ul>
+    <ul class="navbar-nav nav-item">
+        <li><a href="{{ path('app_home') }}">Accueil</a></li>
+        <li><a href="{{ path('app_user_list') }}">List users</a></li>
+        <li><a href="{{ path('list_event') }}">List event</a></li>
+        <li><a href="{{ path('create_event') }}">Create event</a></li>
+        <li><a href="{{ path('app_register') }}">Registration</a></li>
+        {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            <li><a href="{{ path('app_logout') }}">Logout</a></li>
+            {% if app.user %}
+                <li><a href="{{ path('app_detail',{'id': app.user.id}) }}">Profile</a></li>
+            {% endif %}
+        {% else %}
+            <li><a href="{{ path('app_login') }}">Login</a></li>
+        {% endif %}
+
+    </ul>
 </nav>
 
 {% for label, messages in app.flashes %}
