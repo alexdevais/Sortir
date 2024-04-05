@@ -3,32 +3,94 @@
 {% block title %}Hello EventController!{% endblock %}
 
 {% block body %}
+    <body>
+    <h1>Event List</h1>
+    <div class="container">
 
-    {# TODO ajouter les filtres #}
+        <div class="menu1">
+            {#     TODO ajouter les filtres #}
+            {#     filtre par nom #}
+            <form action="{{ path('list_event_name') }}" method="get">
+                <label for="name">Enter event name</label>
+                <input id="name" class="form-control" type="text" name="searchQuery" placeholder="Enter event name">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Duration</th>
-            <th scope="col">Date limit Inscription</th>
-            <th scope="col">Number inscription max</th>
-            <th scope="col">State</th>
-            <th scope="col">Location name</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in event %}
-            <tr>
-                <td><a href="{{ path('detail_event', {'id': row.id}) }}">{{ row.name }}</a></td>
-                <td>{{ row.duration }} jours</td>
-                <td>{{ row.dateLimitationInscription | date("m/d/Y") }}</td>
-                <td>{{ row.nbInscriptionMax - row.participants.count }} / {{ row.nbInscriptionMax }}</td>
-                <td>{{ row.state }}</td>
-                <td>{{ row.location.name }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            {#     filtre par date #}
+            <form action="{{ path('list_event_date') }}" method="get">
+                <label for="date1">Start date</label>
+                <input id="date1" class="form-control" type="date" name="startDate" placeholder="Date de début">
+                <label for="date1">End date</label>
+                <input class="form-control" type="date" name="endDate" placeholder="Date de fin">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+        </div>
 
+        <div class="menu2">
+
+            <form action="{{ path('list_event_filter') }}" method="get">
+                <div class="form-group">
+                    <label for="participation">Filter by participation :</label>
+                    <br>
+                    <label for="organizing">I organize</label>
+                    <input class="form-check" type="radio" name="participation" id="organizing" value="organizing"
+                           {% if event == 'isOrganizing' %}checked="checked"{% endif %}>
+                    <br>
+                    <label for="participating">I participate</label>
+                    <input class="form-check" type="radio" name="participation" id="participating"
+                           value="participating"
+                           {% if event == 'isParticipating' %}checked="checked"{% endif %}>
+                    <br>
+                    <label for="none">No filter</label>
+                    <input class="form-check" type="radio" name="participation" id="none" value="none"
+                           {% if event is null %}checked="checked"{% endif %}>
+
+                    <br>
+                    <button class="btn btn-primary" type="submit">Rechercher</button>
+                </div>
+
+            </form>
+
+
+            {# TODO filtre event ou je ne participe pas #}
+            {#     filtre par non participant #}
+            {#    <form action="{{ path('list_event_not_participant') }}" method="get"> #}
+            {#        <input type="checkbox" name="isNotParticipating" id="isNotParticipating"> #}
+            {#        <label for="isNotParticipating">Je ne participe pas</label> #}
+            {#        <button type="submit">Search</button> #}
+            {#    </form> #}
+        </div>
+
+        <div class="list">
+            <div class="elementsList">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Event date</th>
+                        <th scope="col">Duration</th>
+                        <th scope="col">Date limit Inscription</th>
+                        <th scope="col">Number inscription max</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Location name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in event %}
+                        <tr>
+                            <td><a href="{{ path('detail_event', {'id': row.id}) }}">{{ row.name }}</a></td>
+                            <td>{{ row.firstAirDate | date("d/m/Y") }}</td>
+                            <td>{{ row.duration }} jours</td>
+                            <td>{{ row.dateLimitationInscription | date("d/m/Y") }}</td>
+                            <td>{{ row.nbInscriptionMax - row.participants.count }} / {{ row.nbInscriptionMax }}</td>
+                            <td>{{ row.state }}</td>
+                            <td>{{ row.location.name }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </body>
 {% endblock %}
