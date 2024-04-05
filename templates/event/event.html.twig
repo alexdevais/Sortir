@@ -3,12 +3,18 @@
 {% block title %}Hello EventController!{% endblock %}
 
 {% block body %}
-    {{ form(form) }}
+    <h1>Create your event !</h1>
+    <div class="container1">
+        <div class="bg">
+            <div class="form">
+                {{ form(form) }}
 
-    {% if event.organizer is defined %}
-        Event organizer: {{ event.organizer.name }}
-    {% else %}
-        Event organizer not yet loaded.
-    {% endif %}
-
+                {% if event.organizer is defined %}
+                    Event organizer: {{ event.organizer.name }}
+                {% else %}
+                    Event organizer not yet loaded.
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -45,34 +46,69 @@ class EventRepository extends ServiceEntityRepository
             ->setParameter('participantId', $participantId);
 
         $query = $qb->getQuery();
-        $events = $query->getResult();
+        $event = $query->getResult();
 
-        return $events;
+        return $event;
     }
 
+    public function findByName($name)
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.name LIKE :name')
+            ->setParameter('name', '%' . $name . '%')
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    /**
-    //     * @return Event[] Returns an array of Event objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findEventsBetweenDates($startDate, $endDate)
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.firstAirDate >= :startDate')
+            ->andWhere('e.firstAirDate <= :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Event
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByOrganizer(User $user)
+    {
+        return $this->createQueryBuilder('e')
+            ->innerJoin('e.organizer', 'o')
+            ->where('o.id = :organizerId')
+            ->setParameter('organizerId', $user->getId())
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findEventsWithParticipant($participant)
+    {
+        return $this->createQueryBuilder('e')
+            ->innerJoin('e.user', 'p')
+            ->where('p.id = :participantId')
+            ->setParameter('participantId', $participant)
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    // TODO filtre event ou je ne participe pas
+//    public function findEventsWithoutParticipant($participant)
+//    {
+//        $qb = $this->createQueryBuilder('e');
+//        $qb->leftJoin('e.user', 'p')
+//            ->where('p.id IS NULL OR p.id <> :participantId')
+//            ->setParameter('participantId', $participant);
+//        $qb->orderBy('e.id', 'ASC');
+//        $qb->setMaxResults(10);
+//
+//        return $qb->getQuery()->getResult();
+//    }
 }

@@ -3,6 +3,9 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+    <div class="container1">
+        <div class="bg">
+            <div class="form">
 <form method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -22,8 +25,7 @@
 
 
     <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+           value="{{ csrf_token('authenticate') }}">
 
     <div class="checkbox mb-3">
         <label>
@@ -35,4 +37,7 @@
         Sign in
     </button>
 </form>
+    </div>
+    </div>
+    </div>
 {% endblock %}

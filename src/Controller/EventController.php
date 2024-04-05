@@ -18,22 +18,19 @@ use Symfony\Component\Routing\Attribute\Route;
 class EventController extends AbstractController
 {
 
+
     #[Route('/', name: 'list_event')]
     public function listEvent(EventRepository $eventRepository): Response
     {
-
+        // event de moins d'un mois
         $today = new DateTime(); // Get today's date
         $oneMonthAgo = $today->modify('-1 month');
-
-        $event = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
-
+        $events = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
 
         return $this->render('event/index.html.twig', [
-            'event' => $event,
+            'event' => $events,
         ]);
-
     }
-
 
     #[Route('/create', name: 'create_event')]
     public function createEvent(Request $request, EntityManagerInterface $em, CallApiService $callApiService): Response
@@ -114,6 +111,8 @@ class EventController extends AbstractController
                 $this->addFlash('error', 'Veuillez fournir un motif pour annuler événement.');
                 return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
             }
+
+
         }
         $event->setState('CANCELLED');
         $event->setCancelReason($motif);
