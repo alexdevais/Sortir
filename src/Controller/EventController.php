@@ -10,8 +10,10 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -20,7 +22,7 @@ class EventController extends AbstractController
 {
 
 
-    #[Route('/{page}', name: 'list_event',requirements: ['page' => '\d+'], defaults: ['page' => 1])]
+    #[Route('/{page}', name: 'list_event', requirements: ['page' => '\d+'], defaults: ['page' => 1])]
     public function listEvent(EventRepository $eventRepository): Response
     {
         // event de moins d'un mois
@@ -54,11 +56,7 @@ class EventController extends AbstractController
             $newEvent = $eventForm->getData();
             $newLocation = $newEvent->getLocation();
 
-            $responseApi = $callApiService->getFranceDataLoc($newLocation);
-            if (array_key_exists('features', $responseApi) && count($responseApi['features']) > 0) {
 
-                $newLocation->setLongitude($responseApi['features'][0]['geometry']['coordinates'][0])
-                    ->setLatitude($responseApi['features'][0]['geometry']['coordinates'][1]);
                 $user = $this->getUser();
                 $event->setOrganizer($user);
 
@@ -71,7 +69,7 @@ class EventController extends AbstractController
             } else {
                 $this->addFlash('success', 'Event not created !');
             }
-        }
+
 
         return $this->render('event/event.html.twig', [
             'form' => $eventForm,
@@ -182,5 +180,28 @@ class EventController extends AbstractController
         return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
     }
 
+
+    #[Route('/ajax-search-address', name: 'ajax_search_address')]
+    public function ajaxSearchAddress(#[MapQueryParameter] string $address, CallApiService $callApiService): Response
+    {
+
+        $response = $callApiService->getFranceDataFromStreet($address);
+        $addresses= [];
+        foreach ($response['features'] as $address){
+            $addresses[] = [
+                'street'=> $address['properties']['name'],
+                'zipcode'=>$address['properties']['postcode'],
+                'city' => $address['properties']['city'],
+                'latitude'=>$address['geometry']['coordinates'][1],
+                'longitude'=>$address['geometry']['coordinates'][0],
+            ];
+        }
+
+        $htlmContent =  $this->renderView('event/includes/_addresses.html.twig',[
+            'addresses'=> $addresses,
+        ]);
+
+        return $this->json(['success'=>true,'htmlContent'=> $htlmContent]);
+    }
 
 }

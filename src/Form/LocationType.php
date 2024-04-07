@@ -8,19 +8,44 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\RouterInterface;
 
 class LocationType extends AbstractType
 {
+    public function __construct(private readonly RouterInterface $router)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name')
-            ->add('city')
-            ->add('postcode')
-            ->add('street')
-            ->add('latitude', HiddenType::class)
-            ->add('longitude',HiddenType::class)
-        ;
+            ->add('street', null, [
+                'attr' => [
+                    'class' => 'js-search-street',
+                    'data-route' => $this->router->generate('ajax_search_address')
+                ]
+
+            ])
+            ->add('city', null, [
+                'attr' => [
+                    'class' => 'js-search-city'
+                ]
+            ])
+            ->add('postcode', null, [
+                'attr' => [
+                    'class' => 'js-search-postcode'
+                ]
+            ])
+            ->add('latitude', HiddenType::class, [
+                'attr' => [
+                    'class' => 'js-search-latitude'
+                ]
+            ])
+            ->add('longitude', HiddenType::class, [
+                'attr' => [
+                    'class' => 'js-search-longitude']
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

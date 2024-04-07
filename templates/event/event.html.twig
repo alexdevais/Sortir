@@ -7,7 +7,21 @@
     <div class="container1">
         <div class="bg">
             <div class="form">
-                {{ form(form) }}
+                {{ form_start(form) }}
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.firstAirDate) }}
+                    {{ form_row(form.duration) }}
+                    {{ form_row(form.dateLimitationInscription) }}
+                    {{ form_row(form.nbInscriptionMax) }}
+                    {{ form_row(form.description) }}
+                    {{ form_row(form.state) }}
+                    {{ form_row(form.location.name) }}
+                    {{ form_row(form.location.street) }}
+                    <div id="search-street"></div>
+
+                    {{ form_row(form.location.postcode) }}
+                    {{ form_row(form.location.city) }}
+                {{ form_end(form) }}
 
                 {% if event.organizer is defined %}
                     Event organizer: {{ event.organizer.name }}

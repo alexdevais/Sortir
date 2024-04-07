@@ -29,12 +29,13 @@
         <dt>LOCATION:</dt>
         <dt>Name location:</dt>
         <dd>{{ event.location.name }}</dd>
+        <dt>Street:</dt>
+        <dd>{{ event.location.street }}</dd>
         <dt>City:</dt>
         <dd>{{ event.location.city }}</dd>
         <dt>Postcode:</dt>
         <dd>{{ event.location.postcode }}</dd>
-        <dt>Street:</dt>
-        <dd>{{ event.location.street }}</dd>
+
 
 
         {% if is_granted('ROLE_USER') %}
