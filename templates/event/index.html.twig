@@ -8,26 +8,28 @@
     <div class="container">
 
         <div class="menu1">
-            {#     TODO ajouter les filtres #}
-            {#     filtre par nom #}
-            <form action="{{ path('list_event_name') }}" method="get">
-                <label for="name">Enter event name</label>
-                <input id="name" class="form-control" type="text" name="searchQuery" placeholder="Enter event name">
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-
-            {#     filtre par date #}
-            <form action="{{ path('list_event_date') }}" method="get">
-                <label for="date1">Start date</label>
-                <input id="date1" class="form-control" type="date" name="startDate" placeholder="Date de début">
-                <label for="date1">End date</label>
-                <input class="form-control" type="date" name="endDate" placeholder="Date de fin">
-                <button class="btn btn-primary" type="submit">Search</button>
+            <form action="{{ path('list_event_filter_name_date') }}" method="get">
+                <div class="form-group">
+                    <label for="name">Nom</label>
+                    <input id="name" class="form-control" type="text" name="searchQuery" placeholder="Entrez le nom de l'événement (optionnel)">
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input id="location" class="form-control" type="text" name="location" placeholder="Entrez le nom de l'événement (optionnel)">
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Date de début</label>
+                    <input id="startDate" class="form-control" type="date" name="startDate" placeholder="JJ-MM-AAAA">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Date de fin</label>
+                    <input id="endDate" class="form-control" type="date" name="endDate" placeholder="JJ-MM-AAAA">
+                </div>
+                <button class="btn btn-primary" type="submit">Rechercher</button>
             </form>
         </div>
 
         <div class="menu2">
-
             <form action="{{ path('list_event_filter') }}" method="get">
                 <div class="form-group">
                     <label for="participation">Filter by participation :</label>
@@ -46,19 +48,10 @@
                            {% if event is null %}checked="checked"{% endif %}>
 
                     <br>
-                    <button class="btn btn-primary" type="submit">Rechercher</button>
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </div>
-
             </form>
 
-
-            {# TODO filtre event ou je ne participe pas #}
-            {#     filtre par non participant #}
-            {#    <form action="{{ path('list_event_not_participant') }}" method="get"> #}
-            {#        <input type="checkbox" name="isNotParticipating" id="isNotParticipating"> #}
-            {#        <label for="isNotParticipating">Je ne participe pas</label> #}
-            {#        <button type="submit">Search</button> #}
-            {#    </form> #}
         </div>
 
         <div class="list">

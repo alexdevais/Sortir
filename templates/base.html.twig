@@ -42,13 +42,13 @@
         </div>
     </div>
 </nav>
-{% if is_granted('ROLE_ADMIN') %}
-    <nav class="navbar">
-        <ul class="navbar-nav nav-item"><h2>Admin</h2>
-            <li><a href="{{ path('app_admin_list') }}">List Users</a></li>
-        </ul>
-    </nav>
-{% endif %}
+{#{% if is_granted('ROLE_ADMIN') %}#}
+{#    <nav class="navbar">#}
+{#        <ul class="navbar-nav nav-item"><h2>Admin</h2>#}
+{#            <li><a href="{{ path('app_admin_list') }}">List Users</a></li>#}
+{#        </ul>#}
+{#    </nav>#}
+{#{% endif %}#}
 
 
 {% for label, messages in app.flashes %}

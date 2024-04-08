@@ -23,7 +23,7 @@ class EventController extends AbstractController
 {
 
 
-    #[Route('/{page}', name: 'list_event', requirements: ['page' => '\d+'], defaults: ['page' => 1])]
+    #[Route('/', name: 'list_event')]
     public function listEvent(EventRepository $eventRepository): Response
     {
         // event de moins d'un mois
@@ -45,10 +45,8 @@ class EventController extends AbstractController
         }
 
         $event = new Event();
-
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
-
         $event->setCreatedDate(new DateTime('now'));
 
         if ($eventForm->isSubmitted() && $eventForm->isSubmitted()) {
@@ -57,19 +55,17 @@ class EventController extends AbstractController
             $newEvent = $eventForm->getData();
             $newLocation = $newEvent->getLocation();
 
+            $user = $this->getUser();
+            $event->setOrganizer($user);
 
-                $user = $this->getUser();
-                $event->setOrganizer($user);
+            $em->persist($newEvent);
+            $em->flush();
 
-
-                $em->persist($newEvent);
-                $em->flush();
-
-                $this->addFlash('success', 'Event created !');
-                return $this->redirectToRoute('list_event');
-            } else {
-                $this->addFlash('success', 'Event not created !');
-            }
+            $this->addFlash('success', 'Event created !');
+            return $this->redirectToRoute('list_event');
+        } else {
+            $this->addFlash('success', 'Event not created !');
+        }
 
 
         return $this->render('event/event.html.twig', [
@@ -88,6 +84,8 @@ class EventController extends AbstractController
 
         return $this->render('event/detail.html.twig', [
             'event' => $event,
+            'user' => $user,
+            'participant' => $participant,
         ]);
 
     }
@@ -98,32 +96,33 @@ class EventController extends AbstractController
     public function cancelEvent(int $id, EntityManagerInterface $em, EventRepository $eventRepository, Request $request): Response
     {
         $event = $eventRepository->find($id);
+        $user = $this->getUser();
         $motif = $request->request->get('motif');
+
         // Vérifier si l'utilisateur est l'organisateur de l'événement
-        if (!$this->isGranted('ROLE_USER') || $event->getOrganizer() !== $this->getUser()) {
+        if (!$this->isGranted('ROLE_USER') && $event->getOrganizer() !== $this->getUser() || !$this->isGranted('ROLE_ADMIN')) {
 
             // Vérifier si la date de début de l'événement est passée
             if ($event->getFirstAirDate() < new \DateTime()) {
-                $this->addFlash('error', 'L\'événement a déjà commencé et ne peut pas être annulé.');
+                $this->addFlash('error', 'The event has already started and cannot be canceled.');
             }
 
             if (empty($motif)) {
-                $this->addFlash('error', 'Veuillez fournir un motif pour annuler événement.');
+                $this->addFlash('error', 'Please provide a reason for canceling the event.');
                 return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
             }
-
 
         }
         $event->setState('CANCELLED');
         $event->setCancelReason($motif);
         $event = $em->flush();
         return $this->redirectToRoute('list_event');
-
         // Envoyer un message de confirmation à l'organisateur
-        $this->addFlash('success', 'L\'événement a été annulé avec succès.');
+        $this->addFlash('success', 'The event has been successfully canceled.');
 
         return $this->render('event/detail.html.twig', [
             'event' => $event,
+            'user' => $user,
         ]);
     }
 
@@ -187,24 +186,23 @@ class EventController extends AbstractController
     {
 
         $response = $callApiService->getFranceDataFromStreet($address);
-        $addresses= [];
-        foreach ($response['features'] as $address){
+        $addresses = [];
+        foreach ($response['features'] as $address) {
             $addresses[] = [
-                'street'=> $address['properties']['name'],
-                'zipcode'=>$address['properties']['postcode'],
+                'street' => $address['properties']['name'],
+                'zipcode' => $address['properties']['postcode'],
                 'city' => $address['properties']['city'],
-                'latitude'=>$address['geometry']['coordinates'][1],
-                'longitude'=>$address['geometry']['coordinates'][0],
+                'latitude' => $address['geometry']['coordinates'][1],
+                'longitude' => $address['geometry']['coordinates'][0],
             ];
         }
 
-        $htlmContent =  $this->renderView('event/includes/_addresses.html.twig',[
-            'addresses'=> $addresses,
+        $htlmContent = $this->renderView('event/includes/_addresses.html.twig', [
+            'addresses' => $addresses,
         ]);
 
-        return $this->json(['success'=>true,'htmlContent'=> $htlmContent]);
+        return $this->json(['success' => true, 'htmlContent' => $htlmContent]);
     }
-
 
 
 }

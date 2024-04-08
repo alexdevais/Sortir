@@ -7,6 +7,7 @@ use App\Entity\User;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -100,16 +101,16 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // TODO filtre event ou je ne participe pas
-//    public function findEventsWithoutParticipant($participant)
-//    {
-//        $qb = $this->createQueryBuilder('e');
-//        $qb->leftJoin('e.user', 'p')
-//            ->where('p.id IS NULL OR p.id <> :participantId')
-//            ->setParameter('participantId', $participant);
-//        $qb->orderBy('e.id', 'ASC');
-//        $qb->setMaxResults(10);
-//
-//        return $qb->getQuery()->getResult();
-//    }
+    public function findEventByLocation($location)
+    {
+        return $this->createQueryBuilder('e')
+            ->innerJoin('e.location', 'l')
+            ->where('l.id = :locationId')
+            ->setParameter('locationId', $location)
+            ->orderBy('e.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

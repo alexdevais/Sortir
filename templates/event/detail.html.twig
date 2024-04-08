@@ -17,11 +17,10 @@
                 <li>{{ participant.name }}</li>
             {% endfor %}
         </ul>
-{#        <dd><a href="{{ path('app_detail', {'id': event.user.id}) }}">{{ event.user.name }}</a></dd>#}
         <dt>Date limitation inscription:</dt>
         <dd>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</dd>
         <dt>Number inscription max:</dt>
-        <dd>Available places: {{ event.nbInscriptionMax - event.participants.count }}</dd>
+        <dd>Available places: {{ event.nbInscriptionMax - event.participants.count() }}</dd>
         <dt>State:</dt>
         <dd>{{ event.state }}</dd>
 
@@ -36,9 +35,7 @@
         <dt>Postcode:</dt>
         <dd>{{ event.location.postcode }}</dd>
 
-
-
-        {% if is_granted('ROLE_USER') %}
+        {% if event.organizer.id == user.id or is_granted('ROLE_ADMIN') %}
             {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
                 <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
                     <input type="text" name="motif" placeholder="Motif d'annulation">
@@ -55,9 +52,9 @@
             {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
                 <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
             {% else %}
-            {% if event.state == 'OPEN' %}
-                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
-            {% endif%}
+                {% if event.state == 'OPEN' %}
+                    <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
+                {% endif %}
                 {% if event.state != 'OPEN' %}
                     <p>Event is not open for registration.</p>
                 {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}
