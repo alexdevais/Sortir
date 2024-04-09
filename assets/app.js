@@ -9,3 +9,5 @@ import './vendor/bootstrap/dist/css/bootstrap.min.css'
 
 import {Alert} from "bootstrap"
 import './script/index.js'
+
+
