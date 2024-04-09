@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CsvController!{% endblock %}
+
+{% block body %}
+    <h1>Import Users from CSV</h1>
+    {% for message in app.flashes %}
+        <div class="alert alert-{{ message.type }}">
+            {{ message.message }}
+        </div>
+    {% endfor %}
+
+{#    <form action="{{ path('app_csv') }}" method="post" enctype="multipart/form-data">#}
+{#        <div class="form-group">#}
+{#            <label for="file">CSV File:</label>#}
+{#            <input type="file" class="form-control" id="file" name="file" required>#}
+{#        </div>#}
+{#        <button type="submit" class="btn btn-primary">Import Users</button>#}
+{#    </form>#}
+    {{ form_errors(form) }}
+    {{ form_start(form, {attr: {'enctype': 'multipart/form-data'}}) }}
+    {{ form_label(form.csvFile, 'Fichier CSV') }}
+{#    {{ form_widget(form.csvFile) }}#}
+    <button type="submit" class="btn btn-primary">Importer</button>
+    {{ form_end(form) }}
+{% endblock %}
