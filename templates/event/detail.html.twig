@@ -56,10 +56,10 @@
     {% else %}
 
         {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
-            <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
+            <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-light">Participate</a>
         {% else %}
             {% if event.state == 'OPEN' %}
-                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
+                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-light">Unregister</a>
             {% endif %}
             {% if event.state != 'OPEN' %}
                 <p>Event is not open for registration.</p>
