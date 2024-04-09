@@ -3,16 +3,6 @@
 {% block title %}Hello UserController!{% endblock %}
 
 {% block body %}
-    {{ form_start(updateForm) }}
+    {{ form(updateForm) }}
 
-    {{ form_row(updateForm.name) }}
-    {{ form_row(updateForm.firstName) }}
-    {{ form_row(updateForm.phoneNumber) }}
-    {{ form_row(updateForm.email) }}
-    {{ form_row(updateForm.plainPassword) }}
-    {{ form_row(updateForm.photo) }}
-    {{ form_row(updateForm.refresh) }}
-    {{ form_row(updateForm.save) }}
-
-    {{ form_end(updateForm) }}
 {% endblock %}

@@ -66,6 +66,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
 
+    #[ORM\Column]
+    private ?bool $state = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -248,6 +251,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhoto(?string $photo): static
     {
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function isState(): ?bool
+    {
+        return $this->state;
+    }
+
+    public function setState(bool $state): static
+    {
+        $this->state = $state;
 
         return $this;
     }

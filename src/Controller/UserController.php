@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Form\UpdateFormType;
 use App\Helpers\FileUploader;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,7 +44,7 @@ class UserController extends AbstractController
             throw $this->createNotFoundException('User not found');
         }
 
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form = $this->createForm(UpdateFormType::class, $user);
         $form->handleRequest($request);
 
 

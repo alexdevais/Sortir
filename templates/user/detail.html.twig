@@ -5,13 +5,25 @@
 {% block body %}
     <h1>Profil</h1>
     <a href="{{ path('app_update', {'id': user.id}) }}" class="btn btn-primary">Update</a>
+    <a href="{{ path('app_admin_delete', {'id': user.id}) }}" class="btn btn-danger">Delete</a>
+    {% if user.state == true %}
+        <a href="{{ path('app_admin_disable', {'id': user.id}) }}" class="btn btn-warning">Disable</a>
+    {% else %}
+        <a href="{{ path('app_admin_disable', {'id': user.id}) }}" class="btn btn-success">Enable</a>
+    {% endif %}
     <ul>
         <li><strong>ID : </strong>{{ user.id }}</li>
         <li><strong>Nom : </strong>{{ user.name }}</li>
         <li><strong>Prénom : </strong>{{ user.firstName }}</li>
         <li><strong>Adresse mail : </strong>{{ user.email }}</li>
+        {% if user.state == true %}
+            <li><strong>Etat : </strong>Actif</li>
+        {% else %}
+            <li><strong>Etat : </strong>Inactif</li>
+        {% endif %}
+
         {% if user.phoneNumber %}
-            <li>{{ user.phoneNumber }}</li>
+            <li><strong>Numéro de téléphone : </strong>{{ user.phoneNumber }}</li>
         {% endif %}
         {% if user.photo %}
             <img src="{{ asset('/uploads/brochures/' ~ user.photo) }}">

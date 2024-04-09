@@ -9,7 +9,7 @@
     <ul>
         {% for user in users %}
             <li>{{ user.name }}</li>
-            <a href="{{ path('app_detail', {'id': user.id}) }}">Liste des utilisateurs</a>
+            <a href="{{ path('app_detail', {'id': user.id}) }}">Détail de l'utilisateur</a>
         {% endfor %}
 
     </ul>

@@ -21,8 +21,6 @@ class RegistrationController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-
-        //$newFilename = null;
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
@@ -36,8 +34,11 @@ class RegistrationController extends AbstractController
             if ($photo) {
                 $fileName = $fileUploader->upload($photo,$this->getParameter('brochures_directory'));
                 $user->setPhoto($fileName);
-            }
+        }
 
+        //$newFilename = null;
+
+            $user->setState(true);
             $user->setRoles(['ROLE_USER']);
             $entityManager->persist($user);
             $entityManager->flush();

@@ -51,7 +51,7 @@ class RegistrationFormType extends AbstractType
                             'max' => 4096,
                         ]),
                     ],
-                    'label' => 'New Password'
+                    'label' => 'Password'
                 ],
                 'second_options' => [
                     'label' => "Confirm your password"
