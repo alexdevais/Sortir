@@ -85,12 +85,16 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('refresh', ButtonType::class, [
                 'label' => 'Clear file',
-                'attr' => [
-                    'onclick' => 'event.preventDefault(); this.closest(\'form\').reset();'
+             'attr' => [
+                    'onclick' => 'event.preventDefault(); this.closest(\'form\').reset();',
+                    'class' => 'btn btn-light',
                 ]
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Submit'
+                'label' => 'Submit',
+                'attr' => [
+                    'class' => 'btn btn-light',
+            ]
             ]);
 
 

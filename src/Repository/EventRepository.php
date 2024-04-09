@@ -25,10 +25,24 @@ class EventRepository extends ServiceEntityRepository
     }
 
 
+    public function findByNameAndDates($searchQuery, $startDate, $endDate)
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->where('e.name LIKE :searchQuery')
+            ->setParameter('searchQuery', "%$searchQuery%")
+            ->andWhere('e.firstAirDate >= :startDate')
+            ->setParameter('startDate', $startDate)
+            ->andWhere('e.firstAirDate <= :endDate')
+            ->setParameter('endDate', $endDate)
+            ->orderBy('e.id', 'ASC')
+            ->getQuery();
+
+        return $qb->getResult();
+    }
+
     public function findByCreatedDateAfter(DateTime $date): array
     {
         $qb = $this->createQueryBuilder('e');
-
         return $qb->where($qb->expr()->gt('e.createdDate', ':date'))
             ->setParameter(':date', $date)
             ->getQuery()
@@ -37,19 +51,14 @@ class EventRepository extends ServiceEntityRepository
 
     public function FindParticipantById(int $participantId): array
     {
-
-
         $qb = $this->getEntityManager()->createQueryBuilder();
-
         $qb->select('e')
             ->from('App\Entity\Event', 'e')
             ->innerJoin('e.user', 'p')
             ->where('p.id = :participantId')
             ->setParameter('participantId', $participantId);
-
         $query = $qb->getQuery();
         $event = $query->getResult();
-
         return $event;
     }
 
@@ -101,16 +110,6 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findEventByLocation($location)
-    {
-        return $this->createQueryBuilder('e')
-            ->innerJoin('e.location', 'l')
-            ->where('l.id = :locationId')
-            ->setParameter('locationId', $location)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
-    }
+
 
 }

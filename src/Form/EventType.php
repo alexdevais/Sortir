@@ -36,8 +36,10 @@ class EventType extends AbstractType
                 ]
             ])
             ->add('location', LocationType::class, [])
-            ->add('submit', SubmitType::class)
-        ;
+            ->add('submit', SubmitType::class,[
+                'attr' => [
+                    'class' => 'btn btn-light',
+            ]]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

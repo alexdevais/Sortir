@@ -1,32 +1,26 @@
-.container {
-    margin-top: 50px;
-    display: grid;
-    grid-template-columns: 1.5fr 0.1fr 1.5fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    gap: 0px 0px;
-    grid-template-areas:
-    "menu1 . menu2"
-    "list list list"
-    "list list list";
-}
 
-.menu1 { grid-area: menu1; }
-.menu2 { grid-area: menu2; }
-.list {
-    background-color: #8bb9fe;
-    border-radius: 10px;
-    margin-top: 20px;
+.containt {
     display: grid;
-    grid-template-columns: 0.1fr 2.8fr 0.1fr;
+    grid-template-columns: 0.2fr 2.6fr 0.2fr;
     grid-template-rows: 0.2fr 2.7fr 0.1fr;
     gap: 0px 0px;
     grid-template-areas:
     ". . ."
-    ". elementsList ."
+    ". tab ."
     ". . .";
-    grid-area: list;
+    grid-area: containt;
 }
-.elementsList { grid-area: elementsList; }
+.tab { grid-area: tab; }
+
+.filter{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .form-control{
     margin-top: 10px;
 }
@@ -37,7 +31,9 @@
 h1{
     text-align: center;
 }
-
+.title{
+    color: white;
+}
 .container1 {
     display: grid;
     grid-template-columns: 0.4fr 2.2fr 0.4fr;
@@ -50,7 +46,7 @@ h1{
 }
 .bg {
     border-radius: 15px;
-    background-color: #8bb9fe;
+    border: white 2px solid;
     display: grid;
     grid-template-columns: 0.2fr 2.6fr 0.2fr;
     grid-template-rows: 0.2fr 2.6fr 0.2fr;
@@ -61,12 +57,57 @@ h1{
     ". . .";
     grid-area: bg;
 }
-.form { grid-area: form;
-
+.form {
+    grid-area: form;
+    color: white;
 }
 
-/*@media only screen and (max-width: 1000px) {*/
-/*    .mobile-invisible *{*/
-/*        display: none;*/
-/*    }*/
-/*}*/
+.logo{
+    width: 50px;
+}
+body {
+    background-image: url("../img/bg.png");
+}
+label{
+    color: white;
+}
+
+.cont{
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+p{
+    color: white;
+}
+
+.fieldset{
+    padding: 10px;
+    margin-bottom: 20px;
+    border: white 2px solid;
+    border-radius: 10px;
+}
+
+.listuser{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+img{
+border: white 2px solid;
+    border-radius: 20px;
+ }
+
+.profil{
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px;
+}

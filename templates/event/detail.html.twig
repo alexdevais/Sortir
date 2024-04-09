@@ -3,67 +3,73 @@
 {% block title %}Hello EventController!{% endblock %}
 
 {% block body %}
-    <h1>Event Detail</h1>
-    <dl>
-        <dt>Name:</dt>
-        <dd>{{ event.name }}</dd>
-        <dt>Description:</dt>
-        <dd>{{ event.description }}</dd>
-        <dt>Organizer:</dt>
-        <dd><a href="{{ path('app_detail', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a></dd>
-        <dt>Participant:</dt>
-        <ul>
-            {% for participant in event.participants %}
-                <li>{{ participant.name }}</li>
-            {% endfor %}
-        </ul>
-        <dt>Date limitation inscription:</dt>
-        <dd>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</dd>
-        <dt>Number inscription max:</dt>
-        <dd>Available places: {{ event.nbInscriptionMax - event.participants.count() }}</dd>
-        <dt>State:</dt>
-        <dd>{{ event.state }}</dd>
+    <div class="container cont">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="project-info-box mt-0">
+                    <h1 class="title">{{ event.name }}</h1>
+                  <fieldset class="fieldset"><p class="mb-0">{{ event.description }}</p></fieldset>
+                </div>
 
-        <br>
-        <dt>LOCATION:</dt>
-        <dt>Name location:</dt>
-        <dd>{{ event.location.name }}</dd>
-        <dt>Street:</dt>
-        <dd>{{ event.location.street }}</dd>
-        <dt>City:</dt>
-        <dd>{{ event.location.city }}</dd>
-        <dt>Postcode:</dt>
-        <dd>{{ event.location.postcode }}</dd>
+                <div class="project-info-box">
+                    <p><b>Organizer :</b><a
+                                href="{{ path('app_detail', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a>
+                    </p>
+                    <p><b>Participants :</b>
+                    <ul>
+                        {% for participant in event.participants %}
+                            <li>{{ participant.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p><b>Date limitation inscription :</b>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
+                    <p><b>Number inscription max :</b>Available
+                        places: {{ event.nbInscriptionMax - event.participants.count() }}</p>
+                    <p class="mb-0"><b>State:</b>{{ event.state }}</p>
+                    <p><b>Name location :</b>{{ event.location.name }}</p>
+                    <p><b>Street :</b>{{ event.location.street }}</p>
+                    <p><b>City :</b>{{ event.location.city }}</p>
+                    <p><b>Postcode :</b>{{ event.location.postcode }}</p>
+                </div>
+                <div class="project-info-box mt-0 mb-0">
 
-        {% if event.organizer.id == user.id or is_granted('ROLE_ADMIN') %}
-            {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
-                <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
-                    <input type="text" name="motif" placeholder="Motif d'annulation">
-                    <button type="submit" class="btn btn-danger">Annuler l'événement</button>
-                </form>
-            {% endif %}
+                </div>
+            </div>
+            <div class="col-md-7">
+                <img src="https://www.bootdey.com/image/400x300/FFB6C1/000000" alt="project-image" class="rounded">
+
+            </div>
+        </div>
+    </div>
+
+    {% if event.organizer.id == user.id or is_granted('ROLE_ADMIN') %}
+        {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
+            <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
+                <input type="text" name="motif" placeholder="Motif d'annulation">
+                <button type="submit" class="btn btn-danger">Annuler l'événement</button>
+            </form>
         {% endif %}
+    {% endif %}
 
-        {% if not is_granted('ROLE_USER') %}
-            <p>You must be logged in to participate in this event.</p>
-            <a href="{{ path('app_login') }}">Login</a>
+    {% if not is_granted('ROLE_USER') %}
+        <p>You must be logged in to participate in this event.</p>
+        <a href="{{ path('app_login') }}">Login</a>
+    {% else %}
+
+        {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
+            <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
         {% else %}
-
-            {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
-                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Participate</a>
+            {% if event.state == 'OPEN' %}
+                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
+            {% endif %}
+            {% if event.state != 'OPEN' %}
+                <p>Event is not open for registration.</p>
+            {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}
+                <p>Registration limit reached for this event.</p>
             {% else %}
-                {% if event.state == 'OPEN' %}
-                    <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-primary">Unregister</a>
-                {% endif %}
-                {% if event.state != 'OPEN' %}
-                    <p>Event is not open for registration.</p>
-                {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}
-                    <p>Registration limit reached for this event.</p>
-                {% else %}
-                    <p>You are already registered for this event.</p>
-                {% endif %}
+                <p>You are already registered for this event.</p>
             {% endif %}
         {% endif %}
+    {% endif %}
 
     </dl>
 {% endblock %}

@@ -1,17 +1,12 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Liste des utilisateurs{% endblock %}
-
 {% block body %}
-    <h1>Liste des utilisateurs</h1>
-
-    <ul>
+    <h1 class="title">Liste des utilisateurs</h1>
+    <div class="listuser">
+    <ul class="list-group">
         {% for user in users %}
-            <li>{{ user.name }}</li>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_detail', {'id': user.id}) }}">Liste des utilisateurs</a>
-            {% endif %}
-
+            <li class="list-group-item"><a href="{{ path('app_detail', {'id': user.id}) }}">{{ user.name }}</a>
+            </li>
         {% endfor %}
     </ul>
-{% endblock %}
+    <a href="{{ path('app_admin_create') }}" class="btn btn-dark">Create user</a></div>{% endblock %}

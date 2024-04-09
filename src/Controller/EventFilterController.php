@@ -11,42 +11,38 @@ use Symfony\Component\Routing\Attribute\Route;
 class EventFilterController extends AbstractController
 {
 
-    // Recherche par nom et date
+
+    // search with name and date
     #[Route('/filter', name: 'list_event_filter_name_date')]
     public function listEvent(EventRepository $eventRepository, Request $request): Response
     {
-        $searchQuery = $request->query->get('searchQuery');
+        $searchQuery = $request->query->get('name');
         $startDate = $request->query->get('startDate');
         $endDate = $request->query->get('endDate');
-        $location = $request->query->get('location');
+        $events = [];
 
-        $event = [];
-
-        if ($searchQuery && $startDate && $endDate && $location) {
-            // Rechercher par nom et dates
-             $event = $eventRepository->findByNameAndDates($searchQuery, $startDate, $endDate);
+        if ($searchQuery && $startDate && $endDate) {
+            // Filter by name and dates
+            $events = $eventRepository->findByNameAndDates($searchQuery, $startDate, $endDate);
         } elseif ($startDate && $endDate) {
-            // Rechercher par dates
-            $event = $eventRepository->findEventsBetweenDates($startDate, $endDate);
+            // Filter by dates
+            $events = $eventRepository->findEventsBetweenDates($startDate, $endDate);
         } elseif ($searchQuery) {
-            // Rechercher par nom
-            $event = $eventRepository->findByName($searchQuery);
-        } elseif ($location) {
-            // Rechercher par location
-            $event = $eventRepository->findEventByLocation($location);
+            // Filter by name
+            $events = $eventRepository->findByName($searchQuery);
         } else {
-            // Afficher tous les événements
-            $event = $eventRepository->findAll();
+            // Show all events
+            $events = $eventRepository->findAll();
         }
 
         return $this->render('event/index.html.twig', [
-            'event' => $event,
+            'event' => $events,
         ]);
     }
 
 
-    // filtre j'organise ou je participe
-    #[Route('/organizer', name: 'list_event_filter')]
+    // filter organizer or participate
+    #[Route('/user', name: 'list_event_filter')]
     public function listEventFilterOrganizer(EventRepository $eventRepository, Request $request): Response
     {
         $participation = $request->query->get('participation');
@@ -57,13 +53,12 @@ class EventFilterController extends AbstractController
         } elseif ($participation === 'participating') {
             $event = $eventRepository->findEventsWithParticipant($user);
         } else {
-            // If no filter or invalid filter, handle as needed
-            $event = $eventRepository->findAll(); // Example for fetching all events
+            $event = $eventRepository->findAll();
         }
 
         return $this->render('event/index.html.twig', [
-            'event' => $event, // Pass events to template
-            'participation' => $participation, // Pass participation for radio checks
+            'event' => $event,
+            'participation' => $participation,
         ]);
     }
 }
