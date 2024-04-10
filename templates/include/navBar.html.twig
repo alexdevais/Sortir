@@ -22,17 +22,15 @@
                     </li>
                 {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
-                <li class="nav-item active"><a class="nav-link" href="{{ path('app_register') }}">Registration</a>
-                <li class="nav-item active"><a class="nav-link" href="{{ path('app_user_list') }}">List users</a></li>
-                <li class="nav-item active"><a class="nav-link" href="{{ path('app_csv') }}">Upload csv</a>
-                <li class="nav-item active"><a class="nav-link" href="{{ path('app_admin_create') }}">Create user</a>
-                    {% endif %}
-                </li> {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
-                    </li>                    {% if app.user %}
-                        <li class="nav-item active"><a class="nav-link"
-                                                       href="{{ path('app_profile',{'id': app.user.id}) }}">Profile</a>
-                        </li>
+                <li class="nav-item active"><a class="nav-link" href="{{ path('app_register') }}">Registration</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_user_list') }}">List users</a></li>
+                <li class="nav-item active"><a class="nav-link" href="{{ path('app_csv') }}">Upload csv</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_admin_create') }}">Create user</a></li>
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_logout') }}">Logout</a></li>
+                {% if app.user %}
+                        <li class="nav-item active"><a class="nav-link" href="{{ path('app_profile',{'id': app.user.id}) }}">Profile</a></li>
                     {% endif %}
                 {% else %}
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
