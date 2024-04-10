@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Event;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +41,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
+    public function findEventsByOrganizer(User $user): array
+    {
+        $eventRepository = $this->getEntityManager()->getRepository(Event::class);
+        $query = $eventRepository->createQueryBuilder('e')
+            ->where('e.organizer = :user')
+            ->setParameter('user', $user)
+            ->getQuery();
 
+        return $query->getResult();
+    }
 
 
     //    /**

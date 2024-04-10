@@ -7,7 +7,7 @@
     <a href="{{ path('app_admin_create') }}" class="btn btn-dark">Create user</a>
     <ul class="list-group">
         {% for user in users %}
-            <li class="list-group-item"><a href="{{ path('app_detail', {'id': user.id}) }}">{{ user.name }}</a></li>
+            <li class="list-group-item"><a href="{{ path('app_profile', {'id': user.id}) }}">{{ user.name }}</a></li>
         {% endfor %}
     </ul>
 

@@ -77,9 +77,7 @@ class AdminController extends AbstractController
         $form = $this->createForm(UpdateFormType::class, $user);
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
-
             $photo = $form->get('photo')->getData();
             if ($photo) {
                 $fileName = $fileUploader->upload($photo, $this->getParameter('brochures_directory'));
@@ -88,7 +86,6 @@ class AdminController extends AbstractController
 
             $em->flush();
             $this->addFlash('success', 'Profile updated successfully');
-
             return $this->redirectToRoute('app_detail', ['id' => $user->getId()]);
         }
 
@@ -102,21 +99,25 @@ class AdminController extends AbstractController
     public function deleteUser(EntityManagerInterface $em, int $id, UserRepository $userRepository): Response
     {
         $user = $em->getRepository(User::class)->find($id);
-
+        $events = $userRepository->findEventsByOrganizer($user);
+        foreach ($events as $event) {
+                $em->remove($event);
+        }
         $em->remove($user);
         $em->flush();
-        $this->addFlash('success', 'Utilisateur supprimé avec succès');
+        $this->addFlash('success', 'User successfully deleted');
 
-        return $this->redirectToRoute('app_admin_list');
+        return $this->redirectToRoute('app_user_list');
     }
+
     #[IsGranted('ROLE_ADMIN')]
     // créer une route permettant de rendre inactif un user
     #[Route('/disable/{id}', name: '_admin_disable')]
-    public function disable(EntityManagerInterface $em, int $id, UserRepository $userRepository): Response
+    public function disable(EntityManagerInterface $em, int $id): Response
     {
         $user = $em->getRepository(User::class)->find($id);
-
         $userState = $user->isState();
+
         if ($userState === true) {
             $user->setState(false);
         } else {
@@ -124,7 +125,6 @@ class AdminController extends AbstractController
         }
         $em->persist($user);
         $em->flush();
-
 
         return $this->redirectToRoute('app_profile', [
             'id' => $id,
