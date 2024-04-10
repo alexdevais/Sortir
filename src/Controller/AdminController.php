@@ -15,11 +15,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_ADMIN')]
 #[Route('/admin', name: 'app')]
 class AdminController extends AbstractController
 {
-
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/list-admin', name: '_admin_list')]
     public function displayUsers(UserRepository $repository,): Response
     {

@@ -12,23 +12,28 @@
                 </div>
 
                 <div class="project-info-box">
-                    <p><b>Organizer :</b><a
-                                href="{{ path('app_detail', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a>
+                    <p><b>Organizer : </b><a
+                                href="{{ path('app_user_list', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a>
                     </p>
-                    <p><b>Participants :</b>
+                    <p><b>Participants : </b>
                     <ul>
                         {% for participant in event.participants %}
-                            <li>{{ participant.name }}</li>
+                            <li class="text-white">{{ participant.name }}</li>
                         {% endfor %}
                     </ul>
-                    <p><b>Date limitation inscription :</b>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
-                    <p><b>Number inscription max :</b>Available
+                    <p><b>Date limitation inscription : </b>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
+                    <p><b>Number inscription max : </b>Available
                         places: {{ event.nbInscriptionMax - event.participants.count() }}</p>
-                    <p class="mb-0"><b>State:</b>{{ event.state }}</p>
-                    <p><b>Name location :</b>{{ event.location.name }}</p>
-                    <p><b>Street :</b>{{ event.location.street }}</p>
-                    <p><b>City :</b>{{ event.location.city }}</p>
-                    <p><b>Postcode :</b>{{ event.location.postcode }}</p>
+                    {% if event.state == 'OPEN' %}
+                        <p class="text-success"><b>State : </b>{{ event.state }}</p>
+                    {% else %}
+                        <p class="text-danger"><b>State : </b>{{ event.state }}</p>
+                    {% endif %}
+                    <p><b>Motif cancel : </b>{{ event.cancelReason }}</p>
+                    <p><b>Name location : </b>{{ event.location.name }}</p>
+                    <p><b>Street : </b>{{ event.location.street }}</p>
+                    <p><b>City : </b>{{ event.location.city }}</p>
+                    <p><b>Postcode : </b>{{ event.location.postcode }}</p>
                 </div>
                 <div class="project-info-box mt-0 mb-0">
 

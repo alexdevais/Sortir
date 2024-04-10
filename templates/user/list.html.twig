@@ -5,7 +5,7 @@
     <div class="listuser">
     <ul class="list-group">
         {% for user in users %}
-            <li class="list-group-item"><a href="{{ path('app_user_list', {'id': user.id}) }}">{{ user.name }}</a>
+            <li class="list-group-item"><a href="{{ path('app_profile', {'id': user.id}) }}">{{ user.name }}</a>
             </li>
         {% endfor %}
     </ul>
