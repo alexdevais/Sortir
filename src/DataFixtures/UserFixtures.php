@@ -16,13 +16,16 @@ class UserFixtures extends Fixture
 
         for ($i = 0; $i < 15; $i++) {
             $user = new User();
-            $user->setName($faker->name);
+            $user->setName($faker->lastName());
             $user->setEmail($faker->unique()->safeEmail);
             $user->setFirstName($faker->firstName);
             $password = password_hash('password', PASSWORD_DEFAULT);
             $user->setPassword($password);
             $roles = ['ROLE_USER'];
             $user->setRoles([$faker->randomElement($roles)]);
+            $user->setPhoneNumber($faker->phoneNumber);
+            $state = 1;
+            $user->setState($state);
 
 
             $manager->persist($user);
