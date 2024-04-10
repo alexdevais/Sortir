@@ -48,6 +48,8 @@ class EventController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+//      ça sert à savoir si le user utilise ou non un pc
+//      si ce n'est pas le cas on a une redirection sur la page d'accueil
         AbstractDeviceParser::setVersionTruncation(AbstractParser::VERSION_TRUNCATION_NONE);
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $clientHints = ClientHints::factory($_SERVER);
@@ -57,9 +59,7 @@ class EventController extends AbstractController
         if (!$device) {
             $this->addFlash('error', 'This path is not available for mobile devices');
             return $this->redirectToRoute('app_home');
-
         }
-
 
         $event = new Event();
         $eventForm = $this->createForm(EventType::class, $event);
@@ -68,7 +68,7 @@ class EventController extends AbstractController
         // setup la date de creation
         $event->setCreatedDate(new DateTime('now'));
 
-        if ($eventForm->isSubmitted() && $eventForm->isSubmitted()) {
+        if ($eventForm->isSubmitted() && $eventForm->isValid()) {
 
             $newEvent = $eventForm->getData();
             $user = $this->getUser();
@@ -94,7 +94,7 @@ class EventController extends AbstractController
     {
         $event = $eventRepository->find($id);
 
-        // recup user qui participe a l'envent
+        // recup user qui participe a l'event
         $user = $this->getUser();
         $participantId = $user->getId();
         $participant = $eventRepository->FindParticipantById($participantId);
@@ -104,9 +104,7 @@ class EventController extends AbstractController
             'user' => $user,
             'participant' => $participant,
         ]);
-
     }
-
 
     // changer l'etat d'un event pour le cancel + motif d'annulation
     #[Route('/detail/{id}/cancel', name: 'cancel_event')]
@@ -131,9 +129,7 @@ class EventController extends AbstractController
         }
         $event->setState('CANCELLED');
         $event->setCancelReason($motif);
-        $event = $em->flush();
-        return $this->redirectToRoute('list_event');
-
+        $em->flush();
         $this->addFlash('success', 'The event has been successfully canceled.');
 
         return $this->render('event/detail.html.twig', [
@@ -163,14 +159,14 @@ class EventController extends AbstractController
         }
 
         // ne peux pas s'inscrire si l'vent est deja plein
-        if ($event->getParticipants()->count() >= $event->getNbInscriptionMax()) {
+        if ($event->getParticipants()->count() <= $event->getNbInscriptionMax()) {
             $this->addFlash('warning', 'Registration limit reached for this event.');
             return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
         }
 
         $isAlreadyRegistered = $event->getUser()->contains($user);
 
-        // register event
+        // unregister event
         if ($isAlreadyRegistered) {
             if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
                 $event->removeParticipant($user);
@@ -181,7 +177,7 @@ class EventController extends AbstractController
                 $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
             }
 
-            // unregister event
+            // register event
         } else {
             if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
                 $event->addParticipant($user);
@@ -199,7 +195,6 @@ class EventController extends AbstractController
     #[Route('/ajax-search-address', name: 'ajax_search_address')]
     public function ajaxSearchAddress(#[MapQueryParameter] string $address, CallApiService $callApiService): Response
     {
-
         $response = $callApiService->getFranceDataFromStreet($address);
         $addresses = [];
 
@@ -213,14 +208,9 @@ class EventController extends AbstractController
                 'longitude' => $address['geometry']['coordinates'][0],
             ];
         }
-
         $htlmContent = $this->renderView('event/includes/_addresses.html.twig', [
             'addresses' => $addresses,
         ]);
-
         return $this->json(['success' => true, 'htmlContent' => $htlmContent]);
     }
-
-
 }
-
