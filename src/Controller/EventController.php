@@ -7,6 +7,10 @@ use App\Form\EventType;
 use App\Helpers\CallApiService;
 use App\Repository\EventRepository;
 use DateTime;
+use DeviceDetector\ClientHints;
+use DeviceDetector\DeviceDetector;
+use DeviceDetector\Parser\AbstractParser;
+use DeviceDetector\Parser\Device\AbstractDeviceParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +47,19 @@ class EventController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
+
+        AbstractDeviceParser::setVersionTruncation(AbstractParser::VERSION_TRUNCATION_NONE);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        $clientHints = ClientHints::factory($_SERVER);
+        $dd = new DeviceDetector($userAgent, $clientHints);
+        $dd->parse();
+        $device = $dd->isDesktop();
+        if (!$device) {
+            $this->addFlash('error', 'This path is not available for mobile devices');
+            return $this->redirectToRoute('app_home');
+
+        }
+
 
         $event = new Event();
         $eventForm = $this->createForm(EventType::class, $event);
