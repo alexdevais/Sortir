@@ -29,7 +29,7 @@ class AdminController extends AbstractController
             'users' => $users,
         ]);
     }
-
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/create-admin', name: '_admin_create')]
     public function createUser(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
@@ -65,7 +65,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/update/{id}', name: '_admin_update')]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_USER')]
     public function update(Request $request, EntityManagerInterface $em, int $id, FileUploader $fileUploader): Response
     {
         $user = $em->getRepository(User::class)->find($id);
@@ -97,7 +97,7 @@ class AdminController extends AbstractController
         ]);
 
     }
-
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/delete-user/{id}', name: '_admin_delete')]
     public function deleteUser(EntityManagerInterface $em, int $id, UserRepository $userRepository): Response
     {
@@ -109,7 +109,7 @@ class AdminController extends AbstractController
 
         return $this->redirectToRoute('app_admin_list');
     }
-
+    #[IsGranted('ROLE_ADMIN')]
     // créer une route permettant de rendre inactif un user
     #[Route('/disable/{id}', name: '_admin_disable')]
     public function disable(EntityManagerInterface $em, int $id, UserRepository $userRepository): Response
@@ -126,7 +126,7 @@ class AdminController extends AbstractController
         $em->flush();
 
 
-        return $this->redirectToRoute('app_detail', [
+        return $this->redirectToRoute('app_profile', [
             'id' => $id,
             'user' => $user
         ]);
