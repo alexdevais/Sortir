@@ -35,7 +35,6 @@ class UserController extends AbstractController
 
     // l'utilisateur peut modifier son profil (en récupérant son id)
     #[Route('/update/{id}', name: '_update')]
-    #[IsGranted('ROLE_ADMIN')]
     public function update(Request $request, EntityManagerInterface $em, int $id, FileUploader $fileUploader): Response
     {
         $user = $em->getRepository(User::class)->find($id);
@@ -76,6 +75,19 @@ class UserController extends AbstractController
 
         return $this->render('user/list.html.twig', [
             'users' => $users,
+        ]);
+    }
+
+    #[Route('/profile/{id}', name: '_profile')]
+    public function profile(EntityManagerInterface $em, int $id): Response
+    {
+        $user = $em->getRepository(User::class)->find($id);
+        if (!$user) {
+            throw $this->createNotFoundException('User not found');
+        }
+        return $this->render('user/profile.html.twig', [
+            'id' => $id,
+            'user' => $user
         ]);
     }
 

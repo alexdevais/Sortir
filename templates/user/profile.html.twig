@@ -17,15 +17,7 @@
                         <li class="mb-0">State : Inactif</li>
                     {% endif %}
                 </div>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_admin_update', {'id': user.id}) }}" class="btn btn-primary">Update</a>
-                    <a href="{{ path('app_admin_delete', {'id': user.id}) }}" class="btn btn-danger">Delete</a>
-                    {% if user.state == true %}
-                        <a href="{{ path('app_admin_disable', {'id': user.id}) }}" class="btn btn-warning">Disable</a>
-                    {% else %}
-                        <a href="{{ path('app_admin_disable', {'id': user.id}) }}" class="btn btn-success">Enable</a>
-                    {% endif %}
-                {% endif %}
+                <a href="{{ path('app_update', {'id': user.id}) }}" class="btn btn-primary">Update</a>
             </div>
             <div class="col-md-7">
                 {% if user.photo %}
