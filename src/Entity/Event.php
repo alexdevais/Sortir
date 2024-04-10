@@ -43,8 +43,8 @@ class Event
     private ?int $nbInscriptionMax = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\Length(min:3, minMessage: 'The name should be longer')]
-    #[Assert\Length(max:500, maxMessage: 'The name should be shorter')]
+    #[Assert\Length(min:3, minMessage: 'The description should be longer')]
+    #[Assert\Length(max:500, maxMessage: 'The description should be shorter')]
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]

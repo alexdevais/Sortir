@@ -52,7 +52,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $firstName = null;
 
     #[ORM\Column(length: 15, nullable: true)]
-    #[Assert\Range(min: 5, max: 20)]
+    #[Assert\Length(min: 10, minMessage: 'The phoneNumber should be longer')]
+    #[Assert\Length(max: 15, maxMessage: 'The phoneNumber should be shorter')]
     private ?string $phoneNumber = null;
 
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'user')]
