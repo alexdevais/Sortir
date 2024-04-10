@@ -1,12 +1,11 @@
 {% extends 'base.html.twig' %}{% block title %}Profil{% endblock %}{% block body %}    <h1 class="title">Profil</h1>
     <div class="container profil">
         <div class="row">
-            <div class="col-md-5">
+            <div class="col">
                 <div class="project-info-box mt-0">
-                    <fieldset class="fieldset"><p class="mb-0">{{ user.firstname }}</p></fieldset>
+                    <fieldset class="fieldset"><p class="mb-0">{{ user.firstname }} {{ user.name }}</p></fieldset>
                 </div>
                 <div class="project-info-box">
-                    <p><b>Name : </b>{{ user.name }}</p>
                     <p><b>Email : </b>{{ user.email }}</p>
                     {% if user.phoneNumber %}
                         <p><b>Phone number : </b>{{ user.phoneNumber }}</p>

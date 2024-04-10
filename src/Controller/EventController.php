@@ -13,13 +13,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 #[Route('/event')]
+#[IsGranted('ROLE_USER')]
 class EventController extends AbstractController
 {
 
-
+    // Affichage de la liste d'event
     #[Route('/', name: 'list_event')]
     public function listEvent(EventRepository $eventRepository): Response
     {
@@ -33,6 +35,7 @@ class EventController extends AbstractController
         ]);
     }
 
+    // Création d'event
     #[Route('/create', name: 'create_event')]
     public function createEvent(Request $request, EntityManagerInterface $em, CallApiService $callApiService): Response
     {
@@ -44,24 +47,22 @@ class EventController extends AbstractController
         $event = new Event();
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
+
+        // setup la date de creation
         $event->setCreatedDate(new DateTime('now'));
 
         if ($eventForm->isSubmitted() && $eventForm->isSubmitted()) {
 
-            /** @var Event $newEvent */
             $newEvent = $eventForm->getData();
-            $newLocation = $newEvent->getLocation();
-
             $user = $this->getUser();
-            $event->setOrganizer($user);
 
+            // recup l'id du user pour l'associé a un organizer
+            $event->setOrganizer($user);
             $em->persist($newEvent);
             $em->flush();
 
             $this->addFlash('success', 'Event created !');
             return $this->redirectToRoute('list_event');
-        } else {
-            $this->addFlash('success', 'Event not created !');
         }
 
 
@@ -70,13 +71,15 @@ class EventController extends AbstractController
         ]);
     }
 
-
+    // Affichage detail event
     #[Route('/detail/{id}', name: 'detail_event')]
     public function detailEvent(int $id, EventRepository $eventRepository): Response
     {
+        $event = $eventRepository->find($id);
+
+        // recup user qui participe a l'envent
         $user = $this->getUser();
         $participantId = $user->getId();
-        $event = $eventRepository->find($id);
         $participant = $eventRepository->FindParticipantById($participantId);
 
         return $this->render('event/detail.html.twig', [
@@ -103,18 +106,17 @@ class EventController extends AbstractController
             if ($event->getFirstAirDate() < new \DateTime()) {
                 $this->addFlash('error', 'The event has already started and cannot be canceled.');
             }
-
+            // Vérifier si un motif a été rempli
             if (empty($motif)) {
                 $this->addFlash('error', 'Please provide a reason for canceling the event.');
                 return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
             }
-
         }
         $event->setState('CANCELLED');
         $event->setCancelReason($motif);
         $event = $em->flush();
         return $this->redirectToRoute('list_event');
-        // Envoyer un message de confirmation à l'organisateur
+
         $this->addFlash('success', 'The event has been successfully canceled.');
 
         return $this->render('event/detail.html.twig', [
@@ -123,17 +125,16 @@ class EventController extends AbstractController
         ]);
     }
 
+    // register et unregister a un event
     #[Route('/inscription/{id}', name: 'inscription_event')]
     public function inscriptionEvent(int $id, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-
         if (!$user) {
             return $this->redirectToRoute('login');
         }
 
         $event = $em->getRepository(Event::class)->find($id);
-
         if (!$event) {
             throw $this->createNotFoundException('Event not found!');
         }
@@ -177,13 +178,15 @@ class EventController extends AbstractController
         return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
     }
 
-
+    // requete ajax vers l'api data-gouv
     #[Route('/ajax-search-address', name: 'ajax_search_address')]
     public function ajaxSearchAddress(#[MapQueryParameter] string $address, CallApiService $callApiService): Response
     {
 
         $response = $callApiService->getFranceDataFromStreet($address);
         $addresses = [];
+
+        // associer element de l'api a mes elements
         foreach ($response['features'] as $address) {
             $addresses[] = [
                 'street' => $address['properties']['name'],

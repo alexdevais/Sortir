@@ -3,8 +3,12 @@
 {% block title %}{{ parent() }}{% endblock %}
 
 {% block body %}
-    <img class="home" src="{{ asset('/img/' ~ 'bg_home.png') }}" alt="">
-
-
-
+    {#    <img class="home" src="{{ asset('/img/' ~ 'bg_home.png') }}" alt=""> #}
+    <div class="blockhome">
+        <h2 class="titlehome">EVENT.COM</h2>
+        <div class="txt">
+            <p>Connect, Collaborate, and Grow.</p>
+            <p>ENI</p>
+        </div>
+    </div>
 {% endblock %}

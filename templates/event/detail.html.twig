@@ -12,49 +12,49 @@
                 </div>
 
                 <div class="project-info-box">
-                    <p><b>Organizer : </b><a
+                    <p><strong>Organizer :</strong><a
                                 href="{{ path('app_user_list', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a>
                     </p>
-                    <p><b>Participants : </b>
+                    <p><strong>Participants :</strong>
                     <ul>
                         {% for participant in event.participants %}
                             <li class="text-white">{{ participant.name }}</li>
                         {% endfor %}
                     </ul>
-                    <p><b>Date limitation inscription : </b>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
-                    <p><b>Number inscription max : </b>Available
+                    <p><strong>Date limitation inscription : </strong>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
+                    <p><strong>Number inscription max : </strong>Available
                         places: {{ event.nbInscriptionMax - event.participants.count() }}</p>
                     {% if event.state == 'OPEN' %}
-                        <p class="text-success"><b>State : </b>{{ event.state }}</p>
+                        <p class="text-success"><strong>State : </strong>{{ event.state }}</p>
                     {% else %}
-                        <p class="text-danger"><b>State : </b>{{ event.state }}</p>
+                        <p class="text-danger"><strong>State : </strong>{{ event.state }}</p>
                     {% endif %}
-                    <p><b>Motif cancel : </b>{{ event.cancelReason }}</p>
-                    <p><b>Name location : </b>{{ event.location.name }}</p>
-                    <p><b>Street : </b>{{ event.location.street }}</p>
-                    <p><b>City : </b>{{ event.location.city }}</p>
-                    <p><b>Postcode : </b>{{ event.location.postcode }}</p>
+                    <p><strong>Motif cancel : </strong>{{ event.cancelReason }}</p>
                 </div>
                 <div class="project-info-box mt-0 mb-0">
 
                 </div>
             </div>
             <div class="col-md-7">
-                <img src="https://www.bootdey.com/image/400x300/FFB6C1/000000" alt="project-image" class="rounded">
+                <img src="https://picsum.photos/400/300" alt="project-image" class="rounded">
+                <div class="project-info-box">
+                    <p><strong>Name location :</strong> {{ event.location.name }}</p>
+                    <p><strong>Street :</strong> {{ event.location.street }}</p>
+                    <p><strong>City :</strong> {{ event.location.city }}</p>
+                    <p><strong>Postcode :</strong> {{ event.location.postcode }}</p>
+                </div>
+                {% if event.organizer.id == user.id or is_granted('ROLE_ADMIN') %}
+                    {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
+                        <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
+                            <input type="text" name="motif" placeholder="Motif d'annulation">
+                            <button type="submit" class="btn btn-danger">Annuler l'événement</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
 
             </div>
         </div>
     </div>
-
-    {% if event.organizer.id == user.id or is_granted('ROLE_ADMIN') %}
-        {% if event.state == 'OPEN' and event.firstAirDate > "now" %}
-            <form method="post" action="{{ path('cancel_event', {'id': event.id}) }}">
-                <input type="text" name="motif" placeholder="Motif d'annulation">
-                <button type="submit" class="btn btn-danger">Annuler l'événement</button>
-            </form>
-        {% endif %}
-    {% endif %}
-
     {% if not is_granted('ROLE_USER') %}
         <p>You must be logged in to participate in this event.</p>
         <a href="{{ path('app_login') }}">Login</a>
