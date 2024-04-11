@@ -29,11 +29,9 @@ class EventController extends AbstractController
     #[Route('/', name: 'list_event')]
     public function listEvent(EventRepository $eventRepository): Response
     {
-        // event de moins d'un mois
-        $today = new DateTime(); // Get today's date
+        $today = new DateTime();
         $oneMonthAgo = $today->modify('-1 month');
         $events = $eventRepository->findByCreatedDateAfter($oneMonthAgo);
-
         return $this->render('event/index.html.twig', [
             'event' => $events,
         ]);
@@ -47,9 +45,8 @@ class EventController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
-
-//      ça sert à savoir si le user utilise ou non un pc
-//      si ce n'est pas le cas on a une redirection sur la page d'accueil
+        //ça sert à savoir si le user utilise ou non un pc
+        //si ce n'est pas le cas on a une redirection sur la page d'accueil
         AbstractDeviceParser::setVersionTruncation(AbstractParser::VERSION_TRUNCATION_NONE);
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $clientHints = ClientHints::factory($_SERVER);
@@ -64,7 +61,6 @@ class EventController extends AbstractController
         $event = new Event();
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
-
         // setup la date de creation
         $event->setCreatedDate(new DateTime('now'));
 
@@ -72,7 +68,6 @@ class EventController extends AbstractController
 
             $newEvent = $eventForm->getData();
             $user = $this->getUser();
-
             // recup l'id du user pour l'associé a un organizer
             $event->setOrganizer($user);
             $em->persist($newEvent);
@@ -138,8 +133,8 @@ class EventController extends AbstractController
         ]);
     }
 
-    // register et unregister a un event
-    #[Route('/inscription/{id}', name: 'inscription_event')]
+    // register a un event
+    #[Route('/register/{id}', name: 'register_event')]
     public function inscriptionEvent(int $id, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -158,40 +153,49 @@ class EventController extends AbstractController
             return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
         }
 
-        // ne peux pas s'inscrire si l'vent est deja plein
-        if ($event->getParticipants()->count() <= $event->getNbInscriptionMax()) {
+        // ne peux pas s'inscrire si l'event est deja plein
+        if ($event->getParticipants()->count() >= $event->getNbInscriptionMax()) {
             $this->addFlash('warning', 'Registration limit reached for this event.');
+
             return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
         }
-
-        $isAlreadyRegistered = $event->getUser()->contains($user);
-
-        // unregister event
-        if ($isAlreadyRegistered) {
-            if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
-                $event->removeParticipant($user);
-                $em->flush();
-
-                $this->addFlash('success', 'You have successfully unregistered from the event.');
-            } else {
-                $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
-            }
-
-            // register event
-        } else {
             if ($event->getDateLimitationInscription() > new \DateTimeImmutable()) {
                 $event->addParticipant($user);
                 $em->flush();
-
-                $this->addFlash('success', 'You have successfully unregistered from the event.');
+                $this->addFlash('success', 'You have successfully registered from the event.');
             } else {
-                $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
+                $this->addFlash('warning', 'The deadline for registering from this event has passed.');
             }
-        }
+
         return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
     }
 
-    // requete ajax vers l'api data-gouv
+    // unregister a un event
+    #[Route('/unregister/{id}', name: 'unregister_event')]
+    public function unregisterEvent(int $id, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('login');
+        }
+
+        $event = $em->getRepository(Event::class)->find($id);
+        if (!$event) {
+            throw $this->createNotFoundException('Event not found!');
+        }
+        $isAlreadyRegistered = $event->getUser()->contains($user);
+       if($isAlreadyRegistered){
+            $event->removeParticipant($user);
+            $em->flush();
+            $this->addFlash('success', 'You have successfully unregistered from the event.');
+        } else {
+            $this->addFlash('warning', 'The deadline for unregistering from this event has passed.');
+        }
+
+        return $this->redirectToRoute('detail_event', ['id' => $event->getId()]);
+    }
+
+// requete ajax vers l'api data-gouv
     #[Route('/ajax-search-address', name: 'ajax_search_address')]
     public function ajaxSearchAddress(#[MapQueryParameter] string $address, CallApiService $callApiService): Response
     {

@@ -13,12 +13,12 @@
 
                 <div class="project-info-box">
                     <p><strong>Organizer :</strong><a
-                                href="{{ path('app_user_list', {'id': event.organizer.id}) }}">{{ event.organizer.name }}</a>
+                                href="{{ path('app_user_list', {'id': event.organizer.id}) }}">{{ event.organizer.name }} {{ event.organizer.firstname }}</a>
                     </p>
                     <p><strong>Participants :</strong>
                     <ul>
                         {% for participant in event.participants %}
-                            <li class="text-white">{{ participant.name }}</li>
+                            <li class="text-white">{{ participant.name }}  {{ participant.firstname }}</li>
                         {% endfor %}
                     </ul>
                     <p><strong>Date limitation inscription : </strong>{{ event.dateLimitationInscription|date('D d/m/Y H:i') }}</p>
@@ -57,19 +57,19 @@
     {% else %}
 
         {% if event.state == 'OPEN' and not event.user.contains(app.user) and event.getParticipants().count() < event.getNbInscriptionMax() %}
-            <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-light">Participate</a>
-        {% else %}
-            {% if event.state == 'OPEN' %}
-                <a href="{{ path('inscription_event', {'id': event.id}) }}" class="btn btn-light">Unregister</a>
-            {% endif %}
-            {% if event.state != 'OPEN' %}
-                <p>Event is not open for registration.</p>
-            {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}
-                <p>Registration limit reached for this event.</p>
-            {% else %}
-                <p>You are already registered for this event.</p>
-            {% endif %}
+            <a href="{{ path('register_event', {'id': event.id}) }}" class="btn btn-light">Participate</a>
         {% endif %}
+        {% if event.user.contains(app.user) %}
+                <a href="{{ path('unregister_event', {'id': event.id}) }}" class="btn btn-light">Unregister</a>
+        {% endif %}
+{#            {% if event.state != 'OPEN' %}#}
+{#                <p>Event is not open for registration.</p>#}
+{#            {% elseif event.getParticipants().count() >= event.getNbInscriptionMax() %}#}
+{#                <p>Registration limit reached for this event.</p>#}
+{#            {% else %}#}
+{#                <p>You are already registered for this event.</p>#}
+{#            {% endif %}#}
+
     {% endif %}
             </div>
         </div>

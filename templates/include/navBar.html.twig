@@ -15,6 +15,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active"><a class="nav-link" href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="nav-item active"><a class="nav-link" href="{{ path('app_register') }}">Registration</a></li>
                 {% if is_granted('ROLE_USER') %}
                     <li class="nav-item active"><a class="nav-link" href="{{ path('list_event') }}">List event</a></li>
                     <li class="nav-item active d-none d-md-block"><a class="nav-link" href="{{ path('create_event') }}">Create
@@ -22,7 +23,6 @@
                     </li>
                 {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
-                <li class="nav-item active"><a class="nav-link" href="{{ path('app_register') }}">Registration</a></li>
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_user_list') }}">List users</a></li>
                 <li class="nav-item active"><a class="nav-link" href="{{ path('app_csv') }}">Upload csv</a></li>
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_admin_create') }}">Create user for admin</a></li>
