@@ -1,12 +1,22 @@
 {% extends 'base.html.twig' %}
 {% block title %}Liste des utilisateurs{% endblock %}
 {% block body %}
-    <h1 class="title">Liste des utilisateurs</h1>
-    <div class="listuser">
-    <ul class="list-group">
-        {% for user in users %}
-            <li class="list-group-item"><a href="{{ path('app_profile', {'id': user.id}) }}">{{ user.name }}  {{ user.firstname }}</a>
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{{ path('app_admin_create') }}" class="btn btn-dark">Create user</a></div>{% endblock %}
+<h1 class="title">Liste des utilisateurs</h1>
+    <a href="{{ path('app_admin_create') }}" class="btn btn-dark">Create user</a>
+
+<div class="profilposition">
+    {% for user in users %}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card hover-img">
+                <div class="card-body p-4 text-center border-bottom">
+                    {% if user.photo %}
+                        <img class="rounded-circle mb-3" width="80" height="80" src="{{ asset('/uploads/brochures/' ~ user.photo) }}">
+                    {% endif %}
+                    <h5 class="fw-semibold mb-0"><a href="{{ path('app_profile', {'id': user.id}) }}">{{ user.name }}  {{ user.firstname }}</a>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div></div>
+{% endblock %}

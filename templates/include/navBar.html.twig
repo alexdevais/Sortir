@@ -25,7 +25,7 @@
                 <li class="nav-item active"><a class="nav-link" href="{{ path('app_register') }}">Registration</a></li>
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_user_list') }}">List users</a></li>
                 <li class="nav-item active"><a class="nav-link" href="{{ path('app_csv') }}">Upload csv</a></li>
-                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_admin_create') }}">Create user</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="{{ path('app_admin_create') }}">Create user for admin</a></li>
                 {% endif %}
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item active"><a class="nav-link" href="{{ path('app_logout') }}">Logout</a></li>

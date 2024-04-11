@@ -86,7 +86,7 @@ class AdminController extends AbstractController
 
             $em->flush();
             $this->addFlash('success', 'Profile updated successfully');
-            return $this->redirectToRoute('app_detail', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_profile', ['id' => $user->getId()]);
         }
 
         return $this->render('user/update.html.twig', [

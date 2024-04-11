@@ -18,7 +18,6 @@ final class LoginSuccessEventListener
     #[AsEventListener(event: LoginSuccessEvent::class)]
     public function onLoginSuccessEvent(LoginSuccessEvent $event): void
     {
-//        dd($event);
     $user = $event->getUser();
     $ipAddress = $event->getRequest()->getClientIp();
 

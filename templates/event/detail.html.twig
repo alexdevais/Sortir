@@ -51,10 +51,6 @@
                         </form>
                     {% endif %}
                 {% endif %}
-
-            </div>
-        </div>
-    </div>
     {% if not is_granted('ROLE_USER') %}
         <p>You must be logged in to participate in this event.</p>
         <a href="{{ path('app_login') }}">Login</a>
@@ -75,6 +71,7 @@
             {% endif %}
         {% endif %}
     {% endif %}
-
-    </dl>
+            </div>
+        </div>
+    </div>
 {% endblock %}
