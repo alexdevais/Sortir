@@ -29,7 +29,6 @@ class UpdateFormType extends AbstractType
                 'required' => false
             ])
             ->add('email', EmailType::class)
-
             ->add('photo', FileType::class, [
                 'label' => 'Photo',
                 'mapped' => false,

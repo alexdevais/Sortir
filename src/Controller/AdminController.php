@@ -65,7 +65,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/update/{id}', name: '_admin_update')]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_ADMIN')]
     public function update(Request $request, EntityManagerInterface $em, int $id, FileUploader $fileUploader): Response
     {
         $user = $em->getRepository(User::class)->find($id);

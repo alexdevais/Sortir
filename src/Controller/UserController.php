@@ -50,7 +50,7 @@ class UserController extends AbstractController
         ]);
 
     }
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_USER')]
     #[Route('/list', name: '_user_list')]
     public function list(UserRepository $repository,): Response
     {

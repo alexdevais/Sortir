@@ -17,10 +17,10 @@
                     {% endif %}
                 </div>
 
-                {% if is_granted('ROLE_USER') %}
-                    {% if user.id == app.user.id or is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_admin_update', {'id': user.id}) }}" class="btn btn-light">Update</a>
-                    {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_admin_update', {'id': user.id}) }}" class="btn btn-light">Update</a>
+                {% else %}
+                    <a href="{{ path('app_update', {'id': user.id}) }}" class="btn btn-light">Update</a>
                 {% endif %}
 
                 {% if is_granted('ROLE_ADMIN') %}
